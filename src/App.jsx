@@ -26,7 +26,55 @@ function App() {
   }, []);
 
   if (!masterData) {
-    return <h2>데이터 불러오는 중...</h2>;
+    return (
+      <div
+        style={{
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          background: "#f4f8ff",
+          flexDirection: "column",
+          gap: "20px",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            width: "60px",
+            height: "60px",
+            borderRadius: "50%",
+            border: "6px solid #dbeafe",
+            borderTop: "6px solid #2563eb",
+            animation: "spin 1s linear infinite",
+          }}
+        />
+
+        <div
+          style={{
+            fontSize: "18px",
+            fontWeight: "600",
+            color: "#1e3a8a",
+          }}
+        >
+          데이터 불러오는 중...
+        </div>
+
+        <style>
+          {`
+          @keyframes spin {
+            from {
+              transform: rotate(0deg);
+            }
+            to {
+              transform: rotate(360deg);
+            }
+          }
+        `}
+        </style>
+      </div>
+    );
   }
 
   return (

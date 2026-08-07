@@ -77,6 +77,7 @@ export default function BusinessModal({
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") {
+        console.log("닫기 실행");
         onClose();
       }
     };
@@ -147,34 +148,30 @@ export default function BusinessModal({
 
     setSaving(true);
 
-    try {
-      const id = editData ? editData.basic.id : crypto.randomUUID();
+    const id = editData ? editData.basic.id : crypto.randomUUID();
 
-      const saveRows = makeMetricRows({
-        ...formData,
-        id,
-        수주월: getFirstInputMonth("수주"),
-        매출월: getFirstInputMonth("매출"),
+    const saveRows = makeMetricRows({
+      ...formData,
+      id,
+      수주월: getFirstInputMonth("수주"),
+      매출월: getFirstInputMonth("매출"),
+    });
+
+    console.log("전송할 데이터:", saveRows);
+
+    saveBusiness(saveRows)
+      .then(() => {
+        reloadData();
+      })
+      .catch(() => {
+        showToast(editData ? "수정 실패" : "등록 실패");
       });
 
-      console.log("전송할 데이터:", saveRows);
+    onClose();
 
-      const result = await saveBusiness(saveRows);
+    showToast(editData ? "수정 완료" : "등록 완료");
 
-      console.log("응답:", result);
-
-      if (result.success) {
-        onClose();
-
-        setTimeout(() => {
-          reloadData();
-        }, 1000);
-      }
-    } catch (error) {
-      alert("저장 실패");
-    } finally {
-      setSaving(false);
-    }
+    setSaving(false);
   };
 
   return (
