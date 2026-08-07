@@ -351,7 +351,7 @@ export function makeCompareData(savedFilters) {
       values: results.map((item) => item.profit),
     },
     {
-      label: "재료비",
+      label: "매출원가",
       values: results.map((item) => item.cost),
     },
   ];

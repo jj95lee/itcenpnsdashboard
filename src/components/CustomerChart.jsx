@@ -33,12 +33,12 @@ const CustomTooltip = ({ active, payload, label }) => {
         2024 매출이익 : {d.profit2024.toLocaleString()} {/* 매출이익 */}
       </div>
       <div>
-        2024 재료비 : {d.cost2024.toLocaleString()} {/* 재료비 */}
+        2024 매출원가 : {d.cost2024.toLocaleString()} {/* 매출원가 */}
       </div>
       <hr />
       <div>2025 매출 : {d.sales2025.toLocaleString()}</div>
       <div>2025 매출이익 : {d.profit2025.toLocaleString()}</div>
-      <div>2025 재료비 : {d.cost2025.toLocaleString()}</div>
+      <div>2025 매출원가 : {d.cost2025.toLocaleString()}</div>
     </div>
   );
 };
@@ -64,7 +64,7 @@ export default function CustomerChart({ data }) {
 
       sales2024,
       profit2024,
-      cost2024: sales2024 - profit2024, // 재료비 계산
+      cost2024: sales2024 - profit2024, // 매출원가 계산
 
       sales2025,
       profit2025,

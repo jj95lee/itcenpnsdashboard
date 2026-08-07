@@ -28,13 +28,13 @@ const CustomTooltip = ({ active, payload, label }) => { // active : 마우스 �
 
       <div>2024 매출 : {d.sales2024.toLocaleString()}</div>  {/* 2024 매출 */}
       <div>2024 매출이익 : {d.profit2024.toLocaleString()}</div>  {/* 2024 매출이익 */}
-      <div>2024 재료비 : {d.cost2024.toLocaleString()}</div>  {/* 2024 재료비 */}
+      <div>2024 매출원가 : {d.cost2024.toLocaleString()}</div>  {/* 2024 매출원가 */}
 
       <hr />  {/* 가로선 */}
 
       <div>2025 매출 : {d.sales2025.toLocaleString()}</div>  {/* 2025 매출 */}
       <div>2025 매출이익 : {d.profit2025.toLocaleString()}</div>  {/* 2025 매출이익 */}
-      <div>2025 재료비 : {d.cost2025.toLocaleString()}</div>  {/* 2025 재료비 */}
+      <div>2025 매출원가 : {d.cost2025.toLocaleString()}</div>  {/* 2025 매출원가 */}
     </div>
   )
 }
@@ -59,7 +59,7 @@ export default function ProductChart({ data }) {  // Dashboard의 productData를
 
       sales2024,
       profit2024,
-      cost2024: sales2024 - profit2024,  // 재료비 계산
+      cost2024: sales2024 - profit2024,  // 매출원가 계산
 
       sales2025,
       profit2025,
@@ -112,7 +112,7 @@ export default function ProductChart({ data }) {  // Dashboard의 productData를
             stackId="2024"
             fill="#9CA3AF"
             name="2024 매출"
-          />  {/* 2024 재료비 */}
+          />  {/* 2024 매출원가 */}
 
           <Bar
             dataKey="profit2025"
@@ -126,7 +126,7 @@ export default function ProductChart({ data }) {  // Dashboard의 productData를
             stackId="2025"
             fill="#60A5FA"
             name="2025 매출"
-          />  {/* 2025 재료비 */}
+          />  {/* 2025 매출원가 */}
 
         </BarChart>
       </ResponsiveContainer>

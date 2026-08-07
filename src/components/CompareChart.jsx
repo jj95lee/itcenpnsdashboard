@@ -71,8 +71,8 @@ export default function CompareChart({ data, savedFilters }) {
       매출이익:
         data.find((item) => item.label === "매출이익")?.values?.[index] || 0,
 
-      재료비:
-        data.find((item) => item.label === "재료비")?.values?.[index] || 0,
+      매출원가:
+        data.find((item) => item.label === "매출원가")?.values?.[index] || 0,
     };
   });
 
@@ -168,8 +168,8 @@ export default function CompareChart({ data, savedFilters }) {
           </Bar>
 
           <Bar
-            dataKey="재료비"
-            name="재료비"
+            dataKey="매출원가"
+            name="매출원가"
             fill="transparent"
             legendType="none"
           />

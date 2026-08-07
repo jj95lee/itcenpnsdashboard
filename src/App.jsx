@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { getMasterData } from "./services/api";
 import BusinessList from "./pages/BusinessList";
 
+import manage from "../src/assets/manage.png";
+import dashboard from "../src/assets/dashboard.png";
+
 import logo from "./assets/logo.png";
 import char from "./assets/char.png";
 
@@ -98,8 +101,8 @@ function App() {
             <h1
               style={{
                 margin: 0,
-                fontSize: "28px",
-                fontWeight: "400",
+                fontSize: "35px",
+                fontWeight: "600",
                 color: "#fff",
               }}
             >
@@ -113,46 +116,88 @@ function App() {
             >
               <button
                 onClick={() => setPage("list")}
+                title="사업관리"
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#eaf2ff";
+                  e.currentTarget.style.transform =
+                    "translateY(2px) scale(1.08)";
+                  e.currentTarget.style.opacity = "0.85";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#fff";
+                  e.currentTarget.style.transform = "translateY(2px) scale(1)";
+                  e.currentTarget.style.opacity = "1";
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.transform =
+                    "translateY(5px) scale(0.95)";
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.transform =
+                    "translateY(2px) scale(1.08)";
                 }}
                 style={{
-                  padding: "5px 10px",
-                  fontSize: "12px",
-                  background: "#fff",
-                  color: "#1f4e79",
+                  padding: "0",
+                  marginLeft: "10px",
+                  background: "transparent",
                   border: "none",
-                  borderRadius: "5px",
-                  fontWeight: "600",
                   cursor: "pointer",
+                  display: "flex",
+                  transform: "translateY(2px)",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                사업관리
+                <img
+                  src={manage}
+                  alt="사업관리"
+                  style={{
+                    width: "65px",
+                    height: "68px",
+                    display: "block",
+                  }}
+                />
               </button>
 
               <button
                 onClick={() => setPage("dashboard")}
+                title="대시보드"
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#eaf2ff";
+                  e.currentTarget.style.transform =
+                    "translateY(2px) scale(1.08)";
+                  e.currentTarget.style.opacity = "0.85";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#fff";
+                  e.currentTarget.style.transform = "translateY(2px) scale(1)";
+                  e.currentTarget.style.opacity = "1";
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.transform =
+                    "translateY(5px) scale(0.95)";
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.transform =
+                    "translateY(2px) scale(1.08)";
                 }}
                 style={{
-                  padding: "5px 10px",
-                  fontSize: "12px",
-                  background: "#fff",
-                  color: "#1f4e79",
+                  padding: "0",
+                  marginLeft: "10px",
+                  background: "transparent",
                   border: "none",
-                  borderRadius: "5px",
-                  fontWeight: "600",
                   cursor: "pointer",
+                  display: "flex",
+                  transform: "translateY(2px)",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                대시보드
+                <img
+                  src={dashboard}
+                  alt="대시보드"
+                  style={{
+                    width: "65px",
+                    height: "68px",
+                    display: "block",
+                  }}
+                />
               </button>
             </div>
           </div>
@@ -166,14 +211,21 @@ function App() {
               gap: "15px",
             }}
           >
-            <img
-              src={logo}
-              alt="logo"
-              style={{
-                height: "50px",
-                width: "auto",
-              }}
-            />
+            <a
+              href="https://ep.cengroup.co.kr/xclickr3_itcen/gate/login.jsp"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={logo}
+                alt="logo"
+                style={{
+                  height: "50px",
+                  width: "auto",
+                  cursor: "pointer",
+                }}
+              />
+            </a>
 
             <img
               src={char}

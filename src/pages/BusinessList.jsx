@@ -437,7 +437,7 @@ export default function BusinessList({ masterData, reloadData }) {
     "11월",
     "12월",
     "연간계",
-    "11월 이후",
+    // "11월 이후",
   ];
 
   const getPeriodMonths = (start, end) => {
@@ -869,24 +869,18 @@ export default function BusinessList({ masterData, reloadData }) {
                       <colgroup>
                         {/* 구분 */}
                         <col style={{ width: "60px" }} />
-
                         {/* 수주월 */}
                         <col style={{ width: "45px" }} />
-
                         {/* 매출월 */}
                         <col style={{ width: "45px" }} />
-
                         {/* 1월 ~ 12월 */}
                         {Array.from({ length: 12 }).map((_, i) => (
                           <col key={i} style={{ width: "45px" }} />
                         ))}
-
                         {/* 연간계 */}
                         <col style={{ width: "55px" }} />
-
-                        {/* 11월 이후 */}
-                        <col style={{ width: "70px" }} />
-
+                        {/* 11월 이후
+                        <col style={{ width: "70px" }} /> */}
                         {/* 비고 */}
                         <col style={{ width: "150px" }} />
                       </colgroup>
@@ -945,7 +939,10 @@ export default function BusinessList({ masterData, reloadData }) {
                                 </td>
                               ))}
                             {mIndex === 0 && (
-                              <td rowSpan={row.metricList.length}>
+                              <td
+                                rowSpan={row.metricList.length}
+                                title={String(metricRow["비고"] ?? "")}
+                              >
                                 {metricRow["비고"]}
                               </td>
                             )}
