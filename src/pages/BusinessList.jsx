@@ -517,7 +517,7 @@ export default function BusinessList({ masterData, reloadData }) {
         <span
           style={{
             position: "relative",
-            top: "-12px",
+            top: "45px",
             left: "-6px",
             fontSize: "13px",
             color: "#64748b",
