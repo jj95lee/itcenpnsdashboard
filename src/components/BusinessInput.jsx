@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect } from "react";
 export default function BusinessInput({ masterData, formData, setFormData }) {
   const getAllOptions = (field) => {
@@ -26,6 +27,12 @@ export default function BusinessInput({ masterData, formData, setFormData }) {
       [e.target.name]: e.target.value,
     });
   };
+
+  const progressOptions = [
+    { label: "⚪", value: "#FFFFFF" },
+    { label: "🟡", value: "#FFFFCC" },
+    { label: "⚫", value: "#D9D9D9" },
+  ];
 
   const getFirstInputMonth = (metric) => {
     const months = [
@@ -356,6 +363,31 @@ export default function BusinessInput({ masterData, formData, setFormData }) {
         />
       </div>
 
+      {/* 진행도 */}
+      <div style={rowStyle}>
+        <label style={labelStyle}>진행도</label>
+
+        <select
+          style={getInputStyle(formData.진행도)}
+          name="진행도"
+          value={formData.진행도 || ""}
+          onChange={(e) =>
+            setFormData((prev) => ({
+              ...prev,
+              진행도: e.target.value,
+            }))
+          }
+        >
+          <option value="">선택</option>
+
+          {progressOptions.map((item) => (
+            <option key={item.value} value={item.value}>
+              {item.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      
       {/* 비고 */}
       <div
         style={{
