@@ -1,0 +1,306 @@
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  background: #f4f8ff;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #daebfa;
+}
+
+.topbar {
+  background: #20263e;
+  color: white;
+  padding: 20px;
+}
+
+.topbar h1 {
+  margin: 0 0 15px 0;
+}
+
+.topbar button {
+  margin-right: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.basic-info {
+  font-weight: 400;
+  background: white;
+  padding: 20px 25px 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.basic-info select.selected {
+  font-weight: 700;
+  color: blue;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.form-grid label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.form-grid select,
+.form-grid input,
+.form-grid textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 10px 24px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.monthly-card {
+  background: white;
+
+  margin-top: 25px;
+
+  padding: 25px;
+
+  border-radius: 10px;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.month-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 20px;
+}
+
+.month-item label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-weight: 600;
+}
+
+.month-item input {
+  width: 100%;
+
+  padding: 8px;
+
+  box-sizing: border-box;
+}
+
+.metric-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.metric-table th,
+.metric-table td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: center;
+}
+
+.metric-table th {
+  background: #f5f5f5;
+}
+
+.metric-table input {
+  width: 70px;
+  text-align: right;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+.metric-table input:focus {
+  background: #fffbe6;
+}
+
+.business-table {
+  width: auto;
+  table-layout: auto;
+  border-collapse: collapse;
+}
+
+.business-table th,
+.business-table td {
+  border: 1px solid #333;
+  white-space: nowrap;
+  padding: 4px 8px;
+  min-width: 0;
+  text-align: center;
+  font-size: 10px;
+}
+
+.business-table th {
+  background: #f5f5f5;
+}
+
+.metric-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0px;
+  background-color: white;
+}
+
+.reset-box {
+  transform: translateX(148px);
+}
+
+.detail-button {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 1px 12px;
+  cursor: pointer;
+  font-size: 8px;
+  transition: 0.2s;
+}
+
+.detail-button:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.multi-filter-box {
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.multi-filter-box input {
+  margin-right: 6px;
+}
+
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.form-grid .filter-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-grid .filter-label input {
+  width: auto;
+  margin: 0;
+}
+
+.multi-select-list {
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 6px;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.multi-select-list {
+  padding: 0px 10px;
+}
+
+.multi-option {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 글자는 왼쪽, 체크박스는 오른쪽 */
+  margin-bottom: 6px;
+}
+
+.multi-option input {
+  width: auto;
+  margin-left: 10px;
+}
+
+/* 기본보다 조금 크게 */
+.multi-select-list input[type="checkbox"] {
+  width: 11px;
+  height: 11px;
+  transform: translateY(2px);
+}
+
+/* .multi-select-list label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+} */
+
+.multi-option {
+  font-size: 12px;
+  color: #555;
+}
+
+.multi-all {
+  font-size: 14px;
+  font-weight: bold;
+  color: #222;
+}
+
+.topbar-content {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.topbar nav button {
+  margin-right: 10px;
+  padding: 7px 16px;
+  font-size: 14px;
+}
+
+.period-input-area {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-top: 10px;
+  margin-left: 8px; /* 오른쪽 이동 */
+  margin-bottom: 15px; /* 아래 카드와 간격 */
+}
+
+.period-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.period-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.period-row label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.period-row input {
+  height: 28px;
+  padding: 2px 8px;
+  font-size: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+}
+
+.period-check-box {
+  margin-bottom: 10px;
+}

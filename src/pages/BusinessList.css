@@ -1,0 +1,132 @@
+.business-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.business-table th,
+.business-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+/* No */
+.business-table th:nth-child(1),
+.business-table td:nth-child(1) {
+  width: 27px;
+  text-align: center;
+}
+
+/* 연도 */
+.business-table th:nth-child(2),
+.business-table td:nth-child(2) {
+  width: 32px;
+}
+
+/* new */
+.business-table th:nth-child(3),
+.business-table td:nth-child(3) {
+  width: 52px;
+}
+
+/* 매출유형 */
+.business-table th:nth-child(4),
+.business-table td:nth-child(4) {
+  width: 45px;
+}
+
+/* 구분 */
+.business-table th:nth-child(5),
+.business-table td:nth-child(5) {
+  width: 48px;
+}
+
+/* 고객유형 */
+.business-table th:nth-child(6),
+.business-table td:nth-child(6) {
+  width: 45px;
+}
+
+/* 매출처 */
+.business-table th:nth-child(7),
+.business-table td:nth-child(7) {
+  width: 63px;
+}
+
+/* 최종고객 */
+.business-table th:nth-child(8),
+.business-table td:nth-child(8) {
+  width: 69px;
+}
+
+/* 담당자 */
+.business-table th:nth-child(9),
+.business-table td:nth-child(9) {
+  width: 37px;
+}
+
+/* 확도 */
+.business-table th:nth-child(10),
+.business-table td:nth-child(10) {
+  width: 58px;
+}
+
+
+/* 프로젝트 코드 */
+.business-table th:nth-child(11),
+.business-table td:nth-child(11) {
+  width: 66px;
+}
+
+/* 사업명 */
+.business-table th:nth-child(12),
+.business-table td:nth-child(12) {
+  width: 170px;
+}
+
+/* 상세매출 */
+.business-table th:nth-child(13),
+.business-table td:nth-child(13) {
+  width: 35px;
+}
+
+/* 수정/삭제 */
+.business-table th:last-child,
+.business-table td:last-child {
+  width: 80px;
+}
+
+.metric-detail-table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.metric-detail-table th,
+.metric-detail-table td {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.business-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background: #ffffff;   /* 추가 */
+}
+
+.period-filter-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
+.period-input-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}

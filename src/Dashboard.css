@@ -1,0 +1,478 @@
+.dashboard {
+  min-height: 100vh;
+
+  background: #f4f8ff;
+
+  padding: 10px 60px;
+}
+
+.dashboard__header {
+  background: linear-gradient(195deg, #3159e8 0%, #7f99ff 25%, #ffffff 100%);
+
+  padding: 25px 50px;
+
+  border-radius: 24px;
+
+  margin-bottom: 30px;
+
+  box-shadow: 0 15px 35px rgba(49, 89, 232, 0.18);
+}
+
+.dashboard__header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dashboard__title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 500;
+  color: #20263e;
+  letter-spacing: -0.8px;
+}
+
+.dashboard__meta {
+  margin: 0;
+  font-size: 15px;
+  color: #1c35a9;
+}
+
+.dashboard__main {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+
+  width: 100%;
+  margin: 0 auto;
+}
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.dashboard__footer {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.dashboard__footer p {
+  margin: 0;
+  font-size: 12px;
+  color: #9ca3af;
+}
+/* ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ */
+/* Card */
+.card {
+  background: rgba(255, 255, 255, 0.6);
+
+  backdrop-filter: blur(12px);
+
+  -webkit-backdrop-filter: blur(12px);
+
+  border-radius: 22px;
+
+  padding: 32px;
+
+  margin-bottom: 0;
+
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.07);
+
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 20px 40px rgba(49, 89, 232, 0.12);
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.card-header p {
+  color: #666;
+  margin-top: 8px;
+}
+
+.card__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.card__subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.card__body {
+  margin-top: 20px;
+}
+
+/* Table */
+.table-wrapper {
+  overflow-x: auto;
+  /* margin-top: -80px; */
+  margin-left: 10px;
+}
+
+.data-table {
+  border-collapse: collapse;
+  font-size: 14px;
+  table-layout: fixed;
+}
+
+.data-table thead th {
+  background: #f8f9fb;
+  color: #374151;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 12px 30px;
+  text-align: center;
+  border-bottom: 2px solid #e5e7eb;
+  white-space: nowrap;
+  border-top: 1px solid #e5e7eb;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+}
+
+.data-table tbody td {
+  padding: 10px 25px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #374151;
+  border-right: 1px solid #e5e7eb;
+  border-left: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.data-table tfoot td {
+  padding: 10px 16px;
+  background: #fafbfc;
+  border-top: 2px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  border-left: 1px solid #e5e7eb;
+}
+
+.data-table th:first-child,
+.data-table td:first-child {
+  width: 0%;
+}
+
+.data-table tbody td:first-child {
+  text-align: center !important;
+}
+
+.data-table tbody tr:hover {
+  background: #fafbfc;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.col-label {
+  width: 90px; /* 폭 고정 */
+  text-align: left !important;
+  padding-left: 22px !important; /* 왼쪽 여백 통일 */
+  font-weight: 500;
+  color: #1f2937;
+  vertical-align: middle;
+}
+
+.col-product,
+.col-customer {
+  text-align: left !important;
+  font-weight: 600;
+  color: #1e40af;
+  background: #f8faff;
+  vertical-align: middle;
+  border-right: 1px solid #e8edf5;
+}
+
+.col-number {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-weight: 400;
+}
+
+.col-group {
+  background: #eef2ff !important;
+  color: #3730a3 !important;
+  border-left: 1px solid #e0e7ff;
+}
+
+.data-table .positive {
+  color: red !important;
+  /* font-weight: bold; */
+}
+
+.data-table .negative {
+  color: blue !important;
+  /* font-weight: bold; */
+}
+
+.table-unit {
+  text-align: right !important;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.product-group-start td,
+.customer-group-start td {
+  border-top: 2px solid #e5e7eb;
+}
+
+.product-table .product-group-start:first-child td {
+  border-top: none;
+}
+
+.summary-row td {
+  background: #f9fafb;
+  font-size: 13px;
+}
+
+.customer-table thead tr:last-child th {
+  /* font-size: 12px; */
+  /* font-weight: 700; */
+  /* color: #6b7280; */
+  background: #f3f4f6;
+  padding: 8px 16px;
+}
+
+@media (max-width: 900px) {
+  .dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard {
+    padding: 20px 16px 32px;
+  }
+
+  .dashboard__title {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 600px) {
+  .data-table {
+    font-size: 13px;
+  }
+
+  .data-table thead th,
+  .data-table tbody td {
+    padding: 10px 12px;
+  }
+}
+
+/* 전체 카드 테이블 */
+.overall-table .data-table {
+  width: 100%;
+}
+
+.overall-table .data-table th:first-child,
+.overall-table .data-table td:first-child {
+  width: 90px;
+}
+
+.overall-table .data-table tbody td {
+  padding: 8px 11px;
+}
+
+.overall-table {
+  flex: 1;
+}
+
+.overall-chart {
+  flex: 1;
+  margin-top: 0px;
+}
+
+.overall-layout .card__header {
+  padding-bottom: 0px;
+}
+
+/* 제품별 판매 추이 */
+.product-table .data-table {
+  width: 100%;
+}
+
+.product-table .data-table th:first-child,
+.product-table .data-table td:first-child {
+  width: 90px;
+}
+
+.product-table .data-table tbody td {
+  padding: 8px 15px;
+}
+
+.product-table .data-table th {
+  padding: 12px 15px;
+}
+
+.product-table {
+  flex: 1;
+}
+
+.product-chart {
+  flex: 1;
+  margin-top: 0px;
+}
+
+/* 갱신형 */
+.renewal-table .data-table {
+  width: 100%;
+}
+
+.renewal-table .data-table th:first-child,
+.renewal-table .data-table td:first-child {
+  width: 90px;
+}
+
+.renewal-table .data-table tbody td {
+  padding: 8px 15px;
+}
+
+.renewal-table {
+  flex: 1;
+}
+
+.renewal-chart {
+  flex: 1;
+  margin-top: 0px;
+}
+
+/* 조달판매 */
+.procurement-table .data-table {
+  width: 100%;
+}
+
+.procurement-table .data-table th:first-child,
+.procurement-table .data-table td:first-child {
+  width: 90px;
+}
+
+.procurement-table .data-table tbody td {
+  padding: 8px 15px;
+}
+
+.procurement-table {
+  flex: 1;
+}
+
+.procurement-chart {
+  flex: 1;
+  margin-top: 0px;
+}
+
+/* 고객사 */
+.customer-table .data-table {
+  width: 100%;
+}
+
+.customer-table .data-table th:first-child,
+.customer-table .data-table td:first-child {
+  width: 90px;
+}
+
+.customer-table .data-table tbody td {
+  padding: 8px 15px;
+}
+
+.customer-table {
+  flex: 1;
+}
+
+.customer-chart {
+  flex: 1;
+  margin-top: 0px;
+}
+
+.data-table thead .col-label,
+.data-table thead .col-product {
+  text-align: center !important;
+}
+
+.overall-layout,
+.product-layout,
+.renewal-layout,
+.procurement-layout,
+.customer-layout {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.toast {
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  background: #1f4e79;
+  color: white;
+
+  padding: 12px 24px;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+
+  z-index: 9999;
+
+  animation: toastFade 0.3s ease;
+
+  background: #1f4e79;
+  color: white;
+
+  padding: 12px 20px;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+
+  z-index: 9999;
+
+  animation: toastFade 0.3s ease;
+}
+@keyframes toastFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.business-modal {
+  width: 900px;
+  max-height: 85vh;
+  overflow-y: auto;
+
+  background: rgba(255,255,255,0.95);
+  border-radius: 18px;
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.15);
+
+  padding: 30px;
+}
