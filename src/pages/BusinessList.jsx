@@ -61,6 +61,8 @@ export default function BusinessList({ masterData, reloadData }) {
   const handleResetCompare = () => {
     setSavedFilters([]);
 
+    sessionStorage.removeItem("savedFilters");
+
     setSaved1(false);
     setSaved2(false);
 
@@ -406,7 +408,16 @@ export default function BusinessList({ masterData, reloadData }) {
   }, [usePeriodFilter]);
 
   useEffect(() => {
-    sessionStorage.setItem("savedFilters", JSON.stringify(savedFilters));
+    try {
+      sessionStorage.setItem("savedFilters", JSON.stringify(savedFilters));
+    } catch (error) {
+      if (error.name === "QuotaExceededError") {
+        console.warn("저장된 필터 용량 초과");
+        showToast("저장된 필터가 너무 많습니다. 필터삭제를 눌러주세요.");
+      } else {
+        console.error(error);
+      }
+    }
   }, [savedFilters]);
 
   const toggleRow = (index) => {
@@ -696,7 +707,6 @@ export default function BusinessList({ masterData, reloadData }) {
                   ...prev,
                   {
                     id: Date.now(),
-                    rows: [...resultRows],
                     filters: { ...filterData },
                     periodFilter: usePeriodFilter ? { ...periodFilter } : null,
                   },
@@ -727,7 +737,7 @@ export default function BusinessList({ masterData, reloadData }) {
                   return;
                 }
 
-                const result = makeCompareData(savedFilters);
+                const result = makeCompareData(savedFilters, masterData.rows);
 
                 setCompareResult(result);
                 setCompareOpen(true);

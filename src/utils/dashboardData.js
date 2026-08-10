@@ -253,15 +253,85 @@ export function makeCustomerData(rows) {
   }));
 }
 
-export function makeCompareData(savedFilters) {
+export function makeCompareData(savedFilters, masterRows) {
   const results = savedFilters.map((filter, index) => {
     let sales = 0;
     let profit = 0;
     let cost = 0;
 
-    filter.rows.forEach((row) => {
+    // 저장된 필터 조건으로 다시 검색
+    const filtered = masterRows.filter((row) => {
+      // 일반 필터
+      for (const key in filter.filters) {
+        const filterValue = filter.filters[key];
+
+        if (!filterValue) continue;
+
+        if (String(row[key]) !== String(filterValue)) {
+          return false;
+        }
+      }
+
+      // 다중 선택 필터
+      if (filter.multiFields && filter.multiSelected) {
+        for (const key in filter.multiFields) {
+          if (!filter.multiFields[key]) continue;
+
+          const selected = filter.multiSelected[key];
+
+          if (!selected || selected.length === 0) continue;
+
+          const value =
+            row[key] === "" || row[key] == null ? "(공백)" : row[key];
+
+          if (!selected.some((item) => String(item) === String(value))) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    });
+
+    // BusinessList와 동일한 방식으로 그룹화
+    const grouped = {};
+    const groupedRows = [];
+
+    filtered.forEach((row) => {
+      const key = [
+        row["id"],
+        row["연도"],
+        row["New/Sold"],
+        row["매출유형"],
+        row["구분"],
+        row["고객유형"],
+        row["매출처"],
+        row["최종고객"],
+        row["담당자"],
+        row["확도"],
+        row["진행도"],
+        row["프로젝트코드"],
+        row["사업명"],
+      ].join("|");
+
+      if (!grouped[key]) {
+        grouped[key] = {
+          key,
+          basic: row,
+          metrics: {},
+          metricList: [],
+        };
+
+        groupedRows.push(grouped[key]);
+      }
+
+      grouped[key].metrics[row.metric] = row;
+      grouped[key].metricList.push(row);
+    });
+
+    // 금액 계산
+    groupedRows.forEach((row) => {
       row.metricList.forEach((metricRow) => {
-        console.log("metric 확인:", metricRow.metric);
         if (metricRow.metric === "매출") {
           if (
             filter.periodFilter &&
@@ -281,7 +351,7 @@ export function makeCompareData(savedFilters) {
               }
             });
           } else {
-            sales += Number(metricRow["연간계"] || 0);
+            sales += Number(String(metricRow["연간계"] || 0).replace(/,/g, ""));
           }
         }
 
@@ -304,7 +374,9 @@ export function makeCompareData(savedFilters) {
               }
             });
           } else {
-            profit += Number(metricRow["연간계"] || 0);
+            profit += Number(
+              String(metricRow["연간계"] || 0).replace(/,/g, ""),
+            );
           }
         }
 
@@ -327,7 +399,7 @@ export function makeCompareData(savedFilters) {
               }
             });
           } else {
-            cost += Number(metricRow["연간계"] || 0);
+            cost += Number(String(metricRow["연간계"] || 0).replace(/,/g, ""));
           }
         }
       });
@@ -340,7 +412,9 @@ export function makeCompareData(savedFilters) {
       cost,
     };
   });
+
   console.log("비교 결과:", results);
+
   return [
     {
       label: "매출",

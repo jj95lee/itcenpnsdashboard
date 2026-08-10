@@ -32,10 +32,10 @@ export default function Dashboard({ masterData }) {
 
   return (
     <div className="dashboard" >
-      {" "}
+
       {/* 전체 화면 */}
       <header className="dashboard__header">
-        {" "}
+
         
         {/* 상단 제목 */}
         <div className="dashboard__header-content">
@@ -45,7 +45,7 @@ export default function Dashboard({ masterData }) {
         </div>
       </header>
       <main className="dashboard__main">
-        {" "}
+
         {/* 메인 내용 */}
         {/* 전체 카드 */}
         <Card
@@ -54,7 +54,7 @@ export default function Dashboard({ masterData }) {
           subtitle="팀 전체 실적 요약"
         >
           <div className="overall-layout">
-            {" "}
+
             {/* 표 + 그래프 배치 */}
             <div className="overall-table">
               <OverallTable rows={overallData} />
@@ -130,7 +130,7 @@ export default function Dashboard({ masterData }) {
         </Card>
       </main>
       <footer className="dashboard__footer">
-        {" "}
+
         {/* 하단 */}
         <p>© 2026 ITCEN PNS · FinTech Security Department · Sales Management Dashboard</p>
       </footer>
