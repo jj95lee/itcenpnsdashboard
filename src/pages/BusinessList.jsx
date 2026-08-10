@@ -723,39 +723,63 @@ export default function BusinessList({ masterData, reloadData }) {
             style={{
               margin: 0,
               display: "flex",
-              alignItems: "center",
+              flexDirection: "column",
+              alignItems: "flex-start",
               gap: "12px",
             }}
           >
-            <span>검색 결과 : {resultRows.length}건</span>
+            {/* 검색 결과 + 사업등록 */}
+            <span
+              style={{
+                fontSize: "15px",
+                fontWeight: "500",
+                color: "#6b7280",
+              }}
+            >
+              검색 결과 : {resultRows.length}건
+              <button
+                onClick={() => {
+                  setEditData(null);
+                  setOpenModal(true);
+                }}
+                style={{
+                  padding: "6px 12px",
+                  fontSize: "11px",
+                  cursor: "pointer",
+                  background: "#2563eb",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontWeight: "600",
+                  marginLeft: "15px",
+                }}
+              >
+                + 사업등록
+              </button>
+            </span>
 
-            <span>|</span>
+            {/* 매출 + 매출이익 */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                fontSize: "24x",
+                // color: "#6b7280",
+                fontWeight: "600",
+              }}
+            >
+              <span>
+                매출 : <strong style={{ fontWeight: "800" }}>{totalSales.toLocaleString()}</strong>
+              </span>
 
-            <span>매출 : {totalSales.toLocaleString()}</span>
+              <span style={{ color: "#6b7280" }}>|</span>
 
-            <span>|</span>
-
-            <span>매출이익 : {totalProfit.toLocaleString()}</span>
+              <span>
+                매출이익 : <strong style={{ fontWeight: "800" }}>{totalProfit.toLocaleString()}</strong>
+              </span>
+            </div>
           </h3>
-
-          <button
-            onClick={() => {
-              setEditData(null);
-              setOpenModal(true);
-            }}
-            style={{
-              padding: "6px 12px",
-              fontSize: "11px",
-              cursor: "pointer",
-              background: "#2563eb",
-              color: "#fff",
-              border: "none",
-              borderRadius: "6px",
-              fontWeight: "600",
-            }}
-          >
-            + 사업등록
-          </button>
         </div>
 
         <div

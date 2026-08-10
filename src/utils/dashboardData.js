@@ -267,8 +267,15 @@ export function makeCompareData(savedFilters, masterRows) {
 
         if (!filterValue) continue;
 
-        if (String(row[key]) !== String(filterValue)) {
-          return false;
+        // "(공백)"은 실제 빈 셀로 처리
+        if (filterValue === "(공백)") {
+          if (row[key] !== "" && row[key] !== null && row[key] !== undefined) {
+            return false;
+          }
+        } else {
+          if (String(row[key]) !== String(filterValue)) {
+            return false;
+          }
         }
       }
 
@@ -330,6 +337,7 @@ export function makeCompareData(savedFilters, masterRows) {
     });
 
     // 금액 계산
+    // 금액 계산
     groupedRows.forEach((row) => {
       row.metricList.forEach((metricRow) => {
         if (metricRow.metric === "매출") {
@@ -351,7 +359,12 @@ export function makeCompareData(savedFilters, masterRows) {
               }
             });
           } else {
-            sales += Number(String(metricRow["연간계"] || 0).replace(/,/g, ""));
+            // 조회기간이 없으면 1~12월 전체 합산
+            for (let month = 1; month <= 12; month++) {
+              sales += Number(
+                String(metricRow[`${month}월`] || 0).replace(/,/g, ""),
+              );
+            }
           }
         }
 
@@ -374,9 +387,12 @@ export function makeCompareData(savedFilters, masterRows) {
               }
             });
           } else {
-            profit += Number(
-              String(metricRow["연간계"] || 0).replace(/,/g, ""),
-            );
+            // 조회기간이 없으면 1~12월 전체 합산
+            for (let month = 1; month <= 12; month++) {
+              profit += Number(
+                String(metricRow[`${month}월`] || 0).replace(/,/g, ""),
+              );
+            }
           }
         }
 
@@ -399,7 +415,12 @@ export function makeCompareData(savedFilters, masterRows) {
               }
             });
           } else {
-            cost += Number(String(metricRow["연간계"] || 0).replace(/,/g, ""));
+            // 조회기간이 없으면 1~12월 전체 합산
+            for (let month = 1; month <= 12; month++) {
+              cost += Number(
+                String(metricRow[`${month}월`] || 0).replace(/,/g, ""),
+              );
+            }
           }
         }
       });
