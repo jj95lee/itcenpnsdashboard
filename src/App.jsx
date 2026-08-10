@@ -193,8 +193,8 @@ function App() {
                   src={dashboard}
                   alt="대시보드"
                   style={{
-                    width: "65px",
-                    height: "68px",
+                    width: "60px",
+                    height: "63px",
                     display: "block",
                   }}
                 />

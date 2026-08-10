@@ -350,6 +350,20 @@ export default function BusinessList({ masterData, reloadData }) {
 
     setColorMap(colorMap);
 
+    console.log("filteredGrouped:", filteredGrouped);
+    console.log("filteredGrouped 배열 여부:", Array.isArray(filteredGrouped));
+
+    if (Array.isArray(filteredGrouped)) {
+      console.log(
+        "metricList 확인:",
+        filteredGrouped.map((g) => ({
+          key: g.key,
+          isArray: Array.isArray(g.metricList),
+          metricList: g.metricList,
+        })),
+      );
+    }
+
     setResultRows(filteredGrouped);
     setExpandedRows({});
 
@@ -440,26 +454,6 @@ export default function BusinessList({ masterData, reloadData }) {
     // "11월 이후",
   ];
 
-  const getPeriodMonths = (start, end) => {
-    if (!start || !end) return [];
-
-    const result = [];
-
-    let current = new Date(start + "-01");
-    const last = new Date(end + "-01");
-
-    while (current <= last) {
-      result.push({
-        year: String(current.getFullYear()),
-        month: current.getMonth() + 1,
-      });
-
-      current.setMonth(current.getMonth() + 1);
-    }
-
-    return result;
-  };
-
   const buttonStyle = {
     padding: "8px 18px",
     border: "1px solid #d1d5db",
@@ -524,7 +518,7 @@ export default function BusinessList({ masterData, reloadData }) {
             fontWeight: "500",
           }}
         >
-          최종 업데이트&nbsp;&nbsp;2026.08.03
+          최종 업데이트&nbsp;&nbsp;2026.08.10
         </span>
       </div>
       <div className="period-check-box">
@@ -907,7 +901,10 @@ export default function BusinessList({ masterData, reloadData }) {
                       </thead>
 
                       <tbody>
-                        {row.metricList.map((metricRow, mIndex) => (
+                        {(Array.isArray(row.metricList)
+                          ? row.metricList
+                          : []
+                        ).map((metricRow, mIndex) => (
                           <tr key={mIndex}>
                             <td>{metricRow.metric}</td>
 

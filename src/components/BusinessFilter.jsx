@@ -156,14 +156,11 @@ export default function BasicInfo({
 
   const salesMonthOptions = getOptions("매출월");
 
-  const progressOptions = {
-    // 미착수: "#FFFFFF",
-    "⚪": "#FFFFFF",
-    // 진행중: "#FFFFCC",
-    "🟡": "#FFFFCC",
-    // 완료: "#D9D9D9",
-    "⚫": "#D9D9D9",
-  };
+  const progressOptions = [
+    { label: "⚪", value: "#FFFFFF" },
+    { label: "🟡", value: "#FFFFCC" },
+    { label: "⚫", value: "#D9D9D9" },
+  ];
 
   const handleReset = () => {
     isResetting.current = true;
@@ -1731,23 +1728,23 @@ export default function BasicInfo({
                   onChange={() => handleSelectAll("진행도", progressOptions)}
                 />
               </label>
-              {progressOptions.map((item) => (
-                <label key={item} className="multi-option">
-                  {item}
+              {progressOptions.map((option) => (
+                <label key={option.value} className="multi-option">
+                  {option.label}
 
                   <input
                     type="checkbox"
-                    checked={multiSelected.진행도.includes(item)}
+                    checked={multiSelected.진행도.includes(option.value)}
                     onChange={(e) => {
                       if (e.target.checked) {
                         setMultiSelected((prev) => ({
                           ...prev,
-                          진행도: [...prev.진행도, item],
+                          진행도: [...prev.진행도, option.value],
                         }));
                       } else {
                         setMultiSelected((prev) => ({
                           ...prev,
-                          진행도: prev.진행도.filter((v) => v !== item),
+                          진행도: prev.진행도.filter((v) => v !== option.value),
                         }));
                       }
                     }}
@@ -1805,7 +1802,6 @@ export default function BasicInfo({
             style={getInputStyle(formData.사업명)}
           />
         </div>
-      
 
         {/* 초기화 */}
         <div className="reset-box">
