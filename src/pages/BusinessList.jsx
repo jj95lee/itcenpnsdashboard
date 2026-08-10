@@ -500,6 +500,62 @@ export default function BusinessList({ masterData, reloadData }) {
     },
   };
 
+  const totalSales = resultRows.reduce((sum, group) => {
+    const row = group.metricList?.find((item) => item.metric === "매출");
+
+    if (!row) return sum;
+
+    // 조회기간 적용
+    if (usePeriodFilter && periodFilter.start && periodFilter.end) {
+      const months = getPeriodMonths(periodFilter.start, periodFilter.end);
+
+      return (
+        sum +
+        months.reduce((monthSum, m) => {
+          if (String(group.basic["연도"]) !== String(m.year)) {
+            return monthSum;
+          }
+
+          return (
+            monthSum +
+            Number(String(row[`${m.month}월`] || 0).replace(/,/g, ""))
+          );
+        }, 0)
+      );
+    }
+
+    // 조회기간 미적용 → 연간계
+    return sum + Number(String(row["연간계"] || 0).replace(/,/g, ""));
+  }, 0);
+
+  const totalProfit = resultRows.reduce((sum, group) => {
+    const row = group.metricList?.find((item) => item.metric === "매출이익");
+
+    if (!row) return sum;
+
+    // 조회기간 적용
+    if (usePeriodFilter && periodFilter.start && periodFilter.end) {
+      const months = getPeriodMonths(periodFilter.start, periodFilter.end);
+
+      return (
+        sum +
+        months.reduce((monthSum, m) => {
+          if (String(group.basic["연도"]) !== String(m.year)) {
+            return monthSum;
+          }
+
+          return (
+            monthSum +
+            Number(String(row[`${m.month}월`] || 0).replace(/,/g, ""))
+          );
+        }, 0)
+      );
+    }
+
+    // 조회기간 미적용 → 연간계
+    return sum + Number(String(row["연간계"] || 0).replace(/,/g, ""));
+  }, 0);
+
   return (
     <div
       style={{
@@ -666,9 +722,20 @@ export default function BusinessList({ masterData, reloadData }) {
           <h3
             style={{
               margin: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
             }}
           >
-            검색 결과 : {resultRows.length}건
+            <span>검색 결과 : {resultRows.length}건</span>
+
+            <span>|</span>
+
+            <span>매출 : {totalSales.toLocaleString()}</span>
+
+            <span>|</span>
+
+            <span>매출이익 : {totalProfit.toLocaleString()}</span>
           </h3>
 
           <button
@@ -708,7 +775,10 @@ export default function BusinessList({ masterData, reloadData }) {
                   {
                     id: Date.now(),
                     filters: { ...filterData },
+                    multiFields: { ...multiFields },
+                    multiSelected: { ...multiSelected },
                     periodFilter: usePeriodFilter ? { ...periodFilter } : null,
+                    resultCount: resultRows.length,
                   },
                 ]);
 

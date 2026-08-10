@@ -74,6 +74,7 @@ export default function CompareModal({
     const displayKeys = [
       "연도",
       "New/Sold",
+      "매출유형",
       "구분",
       "고객유형",
       // "담당자",
@@ -207,7 +208,7 @@ export default function CompareModal({
                       fontWeight: "600",
                     }}
                   >
-                    검색건수 : {filter.rows?.length || 0}건
+                    검색건수 : {filter.resultCount || 0}건
                   </p>
                 </div>
 
