@@ -770,13 +770,19 @@ export default function BusinessList({ masterData, reloadData }) {
               }}
             >
               <span>
-                매출 : <strong style={{ fontWeight: "800" }}>{totalSales.toLocaleString()}</strong>
+                매출 :{" "}
+                <strong style={{ fontWeight: "800" }}>
+                  {totalSales.toLocaleString()}
+                </strong>
               </span>
 
               <span style={{ color: "#6b7280" }}>|</span>
 
               <span>
-                매출이익 : <strong style={{ fontWeight: "800" }}>{totalProfit.toLocaleString()}</strong>
+                매출이익 :{" "}
+                <strong style={{ fontWeight: "800" }}>
+                  {totalProfit.toLocaleString()}
+                </strong>
               </span>
             </div>
           </h3>
@@ -803,6 +809,7 @@ export default function BusinessList({ masterData, reloadData }) {
                     multiSelected: { ...multiSelected },
                     periodFilter: usePeriodFilter ? { ...periodFilter } : null,
                     resultCount: resultRows.length,
+                    resultRows: resultRows,
                   },
                 ]);
 

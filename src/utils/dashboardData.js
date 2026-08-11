@@ -159,8 +159,8 @@ export function makeProcurementData(rows) {
   let profit2025 = 0;
 
   rows.forEach((row) => {
-    // 매출처가 "조달"인 데이터만
-    if (row["매출처"] !== "조달") return;
+    // 매출처에 "조달"이라는 단어가 포함된 데이터만
+    if (!String(row["사업명"] || "").includes("조달")) return;
 
     const year = String(row["연도"]);
     const metric = row["metric"];
@@ -273,8 +273,16 @@ export function makeCompareData(savedFilters, masterRows) {
             return false;
           }
         } else {
-          if (String(row[key]) !== String(filterValue)) {
-            return false;
+          // 사업명은 포함 검색
+          if (key === "사업명") {
+            if (!String(row[key] || "").includes(String(filterValue))) {
+              return false;
+            }
+          } else {
+            // 나머지는 기존처럼 정확히 일치
+            if (String(row[key]) !== String(filterValue)) {
+              return false;
+            }
           }
         }
       }
@@ -299,6 +307,9 @@ export function makeCompareData(savedFilters, masterRows) {
 
       return true;
     });
+    console.log("저장된 필터:", filter.filters);
+    console.log("필터 적용 전:", masterRows.length);
+    console.log("필터 적용 후:", filtered.length);
 
     // BusinessList와 동일한 방식으로 그룹화
     const grouped = {};
@@ -337,93 +348,85 @@ export function makeCompareData(savedFilters, masterRows) {
     });
 
     // 금액 계산
-    // 금액 계산
-    groupedRows.forEach((row) => {
-      row.metricList.forEach((metricRow) => {
-        if (metricRow.metric === "매출") {
-          if (
-            filter.periodFilter &&
-            filter.periodFilter.start &&
-            filter.periodFilter.end
-          ) {
-            const months = getPeriodMonths(
-              filter.periodFilter.start,
-              filter.periodFilter.end,
-            );
+    groupedRows.forEach((group) => {
+      const salesRow = group.metricList?.find((item) => item.metric === "매출");
 
-            months.forEach((m) => {
-              if (String(row.basic["연도"]) === String(m.year)) {
-                sales += Number(
-                  String(metricRow[m.month + "월"] || 0).replace(/,/g, ""),
-                );
-              }
-            });
-          } else {
-            // 조회기간이 없으면 1~12월 전체 합산
-            for (let month = 1; month <= 12; month++) {
-              sales += Number(
-                String(metricRow[`${month}월`] || 0).replace(/,/g, ""),
-              );
+      const profitRow = group.metricList?.find(
+        (item) => item.metric === "매출이익",
+      );
+
+      const costRow = group.metricList?.find(
+        (item) => item.metric === "매출원가",
+      );
+
+      // 조회기간 적용
+      if (
+        filter.periodFilter &&
+        filter.periodFilter.start &&
+        filter.periodFilter.end
+      ) {
+        const months = getPeriodMonths(
+          filter.periodFilter.start,
+          filter.periodFilter.end,
+        );
+
+        // 매출
+        if (salesRow) {
+          sales += months.reduce((monthSum, m) => {
+            if (String(group.basic["연도"]) !== String(m.year)) {
+              return monthSum;
             }
-          }
+
+            return (
+              monthSum +
+              Number(String(salesRow[`${m.month}월`] || 0).replace(/,/g, ""))
+            );
+          }, 0);
         }
 
-        if (metricRow.metric === "매출이익") {
-          if (
-            filter.periodFilter &&
-            filter.periodFilter.start &&
-            filter.periodFilter.end
-          ) {
-            const months = getPeriodMonths(
-              filter.periodFilter.start,
-              filter.periodFilter.end,
-            );
-
-            months.forEach((m) => {
-              if (String(row.basic["연도"]) === String(m.year)) {
-                profit += Number(
-                  String(metricRow[m.month + "월"] || 0).replace(/,/g, ""),
-                );
-              }
-            });
-          } else {
-            // 조회기간이 없으면 1~12월 전체 합산
-            for (let month = 1; month <= 12; month++) {
-              profit += Number(
-                String(metricRow[`${month}월`] || 0).replace(/,/g, ""),
-              );
+        // 매출이익
+        if (profitRow) {
+          profit += months.reduce((monthSum, m) => {
+            if (String(group.basic["연도"]) !== String(m.year)) {
+              return monthSum;
             }
-          }
+
+            return (
+              monthSum +
+              Number(String(profitRow[`${m.month}월`] || 0).replace(/,/g, ""))
+            );
+          }, 0);
         }
 
-        if (metricRow.metric === "매출원가") {
-          if (
-            filter.periodFilter &&
-            filter.periodFilter.start &&
-            filter.periodFilter.end
-          ) {
-            const months = getPeriodMonths(
-              filter.periodFilter.start,
-              filter.periodFilter.end,
-            );
-
-            months.forEach((m) => {
-              if (String(row.basic["연도"]) === String(m.year)) {
-                cost += Number(
-                  String(metricRow[m.month + "월"] || 0).replace(/,/g, ""),
-                );
-              }
-            });
-          } else {
-            // 조회기간이 없으면 1~12월 전체 합산
-            for (let month = 1; month <= 12; month++) {
-              cost += Number(
-                String(metricRow[`${month}월`] || 0).replace(/,/g, ""),
-              );
+        // 매출원가
+        if (costRow) {
+          cost += months.reduce((monthSum, m) => {
+            if (String(group.basic["연도"]) !== String(m.year)) {
+              return monthSum;
             }
-          }
+
+            return (
+              monthSum +
+              Number(String(costRow[`${m.month}월`] || 0).replace(/,/g, ""))
+            );
+          }, 0);
         }
-      });
+      }
+
+      // 조회기간 미적용
+      else {
+        if (salesRow) {
+          sales += Number(String(salesRow["연간계"] || 0).replace(/,/g, ""));
+        }
+
+        if (profitRow) {
+          profit += Number(String(profitRow["연간계"] || 0).replace(/,/g, ""));
+        }
+
+        if (costRow) {
+          cost += Number(String(costRow["연간계"] || 0).replace(/,/g, ""));
+        }
+      }
     });
 
     return {
