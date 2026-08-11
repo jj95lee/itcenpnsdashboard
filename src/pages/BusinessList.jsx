@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, Profiler } from "react";
 import "./BusinessList.css";
 import BusinessFilter from "../components/BusinessFilter";
 import BusinessModal from "../components/BusinessModal";
@@ -177,7 +177,7 @@ export default function BusinessList({ masterData, reloadData }) {
   //   완료: "#D9D9D9",
   // };
 
-  const hasPeriodAmount = (row) => {
+  const hasPeriodAmount = (row, months) => {
     if (!usePeriodFilter || !periodFilter.start || !periodFilter.end) {
       return true;
     }
@@ -186,8 +186,6 @@ export default function BusinessList({ masterData, reloadData }) {
     if (row["metric"] !== "매출") {
       return true;
     }
-
-    const months = getPeriodMonths(periodFilter.start, periodFilter.end);
 
     return months.some((m) => {
       if (String(row["연도"]) !== String(m.year)) {
@@ -249,6 +247,10 @@ export default function BusinessList({ masterData, reloadData }) {
   );
 
   const handleSearch = () => {
+    const periodMonths =
+      usePeriodFilter && periodFilter.start && periodFilter.end
+        ? getPeriodMonths(periodFilter.start, periodFilter.end)
+        : [];
     const filtered = masterData.rows.filter((row) => {
       // 조회기간 금액 없는 사업 제외
       if (!hasPeriodAmount(row)) {
@@ -317,10 +319,6 @@ export default function BusinessList({ masterData, reloadData }) {
       map[key].metricList.push(row);
     });
 
-    const periodMonths =
-      usePeriodFilter && periodFilter.start && periodFilter.end
-        ? getPeriodMonths(periodFilter.start, periodFilter.end)
-        : [];
 
     const filteredGrouped = grouped.filter((group) => {
       if (!usePeriodFilter || !periodFilter.start || !periodFilter.end) {
@@ -494,11 +492,6 @@ export default function BusinessList({ masterData, reloadData }) {
     },
   };
 
-  const periodMonths =
-    usePeriodFilter && periodFilter.start && periodFilter.end
-      ? getPeriodMonths(periodFilter.start, periodFilter.end)
-      : [];
-
   const totals = resultRows.reduce(
     (acc, group) => {
       const salesRow = group.metricList?.find((item) => item.metric === "매출");
@@ -576,610 +569,622 @@ export default function BusinessList({ masterData, reloadData }) {
     ];
   }, [metricColumns, usePeriodFilter, periodFilter.start, periodFilter.end]);
 
+  const handleProfiler = (id, phase, actualDuration, baseDuration) => {
+    console.log(
+      `🚀 ${id} | ${phase} | 실제: ${actualDuration.toFixed(2)}ms | 전체: ${baseDuration.toFixed(2)}ms`,
+    );
+  };
+
   return (
-    <div
-      style={{
-        maxWidth: "1300px",
-        margin: "0 auto",
-      }}
-    >
-      {toast && <div className="toast">{toast}</div>}
+    <Profiler id="BusinessList" onRender={handleProfiler}>
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginTop: "-10px",
-          marginBottom: "12px",
+          maxWidth: "1300px",
+          margin: "0 auto",
         }}
       >
-        <h2 style={{ margin: 0 }}>사업 검색</h2>
-
-        <span
+        {toast && <div className="toast">{toast}</div>}
+        <div
           style={{
-            position: "relative",
-            top: "45px",
-            left: "-6px",
-            fontSize: "13px",
-            color: "#64748b",
-            fontWeight: "500",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "-10px",
+            marginBottom: "12px",
           }}
         >
-          최종 업데이트&nbsp;&nbsp;2026.08.10
-        </span>
-      </div>
-      <div className="period-check-box">
-        <label>
-          <input
-            type="checkbox"
-            checked={usePeriodFilter}
-            onChange={(e) => {
-              const checked = e.target.checked;
+          <h2 style={{ margin: 0 }}>사업 검색</h2>
 
-              setUsePeriodFilter(checked);
-
-              if (checked) {
-                setFilterData((prev) => ({
-                  ...prev,
-                  연도: "",
-                }));
-
-                setMultiFields((prev) => ({
-                  ...prev,
-                  연도: false,
-                }));
-
-                setMultiSelected((prev) => ({
-                  ...prev,
-                  연도: [],
-                }));
-              }
-            }}
-          />
-          조회기간 적용 (매출 발생건)
-        </label>
-      </div>
-
-      {usePeriodFilter && (
-        <div className="period-input-area">
-          <div className="period-title">조회기간</div>
-
-          <div className="period-row">
-            <label>시작월</label>
-            <input
-              type="month"
-              value={periodFilter.start}
-              onChange={(e) =>
-                setPeriodFilter({
-                  ...periodFilter,
-                  start: e.target.value,
-                })
-              }
-            />
-          </div>
-
-          <div
-            className="period-row"
+          <span
             style={{
-              display: "flex",
-              alignItems: "center",
+              position: "relative",
+              top: "45px",
+              left: "-6px",
+              fontSize: "13px",
+              color: "#64748b",
+              fontWeight: "500",
             }}
           >
-            <label>종료월</label>
+            최종 업데이트&nbsp;&nbsp;2026.08.10
+          </span>
+        </div>
+        <div className="period-check-box">
+          <label>
             <input
-              type="month"
-              value={periodFilter.end}
-              onChange={(e) =>
-                setPeriodFilter({
-                  ...periodFilter,
-                  end: e.target.value,
-                })
-              }
+              type="checkbox"
+              checked={usePeriodFilter}
+              onChange={(e) => {
+                const checked = e.target.checked;
+
+                setUsePeriodFilter(checked);
+
+                if (checked) {
+                  setFilterData((prev) => ({
+                    ...prev,
+                    연도: "",
+                  }));
+
+                  setMultiFields((prev) => ({
+                    ...prev,
+                    연도: false,
+                  }));
+
+                  setMultiSelected((prev) => ({
+                    ...prev,
+                    연도: [],
+                  }));
+                }
+              }}
             />
-            <button
-              type="button"
-              onClick={() => handleResetPeriod()}
-              title="조회기간 초기화"
+            조회기간 적용 (매출 발생건)
+          </label>
+        </div>
+
+        {usePeriodFilter && (
+          <div className="period-input-area">
+            <div className="period-title">조회기간</div>
+
+            <div className="period-row">
+              <label>시작월</label>
+              <input
+                type="month"
+                value={periodFilter.start}
+                onChange={(e) =>
+                  setPeriodFilter({
+                    ...periodFilter,
+                    start: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div
+              className="period-row"
               style={{
-                marginLeft: "6px",
-                width: "24px",
-                height: "24px",
-                padding: "0",
-                border: "1px solid #cbd5e1",
-                borderRadius: "5px",
-                background: "#f8fafc",
-                color: "#64748b",
-                cursor: "pointer",
-                display: "inline-flex",
+                display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                fontSize: "14px",
-                lineHeight: "1",
               }}
             >
-              ↺
-            </button>
+              <label>종료월</label>
+              <input
+                type="month"
+                value={periodFilter.end}
+                onChange={(e) =>
+                  setPeriodFilter({
+                    ...periodFilter,
+                    end: e.target.value,
+                  })
+                }
+              />
+              <button
+                type="button"
+                onClick={() => handleResetPeriod()}
+                title="조회기간 초기화"
+                style={{
+                  marginLeft: "6px",
+                  width: "24px",
+                  height: "24px",
+                  padding: "0",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: "5px",
+                  background: "#f8fafc",
+                  color: "#64748b",
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "14px",
+                  lineHeight: "1",
+                }}
+              >
+                ↺
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-      <BusinessFilter
-        masterData={masterData}
-        // 일반 필터
-        formData={filterData}
-        setFormData={setFilterData}
-        manualFilters={manualFilters}
-        setManualFilters={setManualFilters}
-        // 자동값
-        autoData={autoData}
-        setAutoData={setAutoData}
-        // 상세행
-        setExpandedRows={setExpandedRows}
-        // ======================
-        multiSelected={multiSelected}
-        setMultiSelected={setMultiSelected}
-        // 체크박스 UI
-        multiFields={multiFields}
-        setMultiFields={setMultiFields}
-        usePeriodFilter={usePeriodFilter}
-        lockYearFilter={lockYearFilter}
-      />
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginTop: "20px",
-          marginBottom: "10px",
-        }}
-      >
+        )}
+        <BusinessFilter
+          masterData={masterData}
+          // 일반 필터
+          formData={filterData}
+          setFormData={setFilterData}
+          manualFilters={manualFilters}
+          setManualFilters={setManualFilters}
+          // 자동값
+          autoData={autoData}
+          setAutoData={setAutoData}
+          // 상세행
+          setExpandedRows={setExpandedRows}
+          // ======================
+          multiSelected={multiSelected}
+          setMultiSelected={setMultiSelected}
+          // 체크박스 UI
+          multiFields={multiFields}
+          setMultiFields={setMultiFields}
+          usePeriodFilter={usePeriodFilter}
+          lockYearFilter={lockYearFilter}
+        />
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "15px",
+            justifyContent: "space-between",
+            marginTop: "20px",
+            marginBottom: "10px",
           }}
         >
-          <h3
+          <div
             style={{
-              margin: 0,
               display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              gap: "12px",
+              alignItems: "center",
+              gap: "15px",
             }}
           >
-            {/* 검색 결과 + 사업등록 */}
-            <span
+            <h3
               style={{
-                fontSize: "15px",
-                fontWeight: "500",
-                color: "#6b7280",
+                margin: 0,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                gap: "12px",
               }}
             >
-              검색 결과 : {resultRows.length}건
+              {/* 검색 결과 + 사업등록 */}
+              <span
+                style={{
+                  fontSize: "15px",
+                  fontWeight: "500",
+                  color: "#6b7280",
+                }}
+              >
+                검색 결과 : {resultRows.length}건
+                <button
+                  onClick={() => {
+                    setEditData(null);
+                    setOpenModal(true);
+                  }}
+                  style={{
+                    padding: "6px 12px",
+                    fontSize: "11px",
+                    cursor: "pointer",
+                    background: "#2563eb",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "6px",
+                    fontWeight: "600",
+                    marginLeft: "15px",
+                  }}
+                >
+                  + 사업등록
+                </button>
+              </span>
+
+              {/* 매출 + 매출이익 */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  fontSize: "24x",
+                  // color: "#6b7280",
+                  fontWeight: "600",
+                }}
+              >
+                <span>
+                  매출 :{" "}
+                  <strong style={{ fontWeight: "800" }}>
+                    {totalSales.toLocaleString()}
+                  </strong>
+                </span>
+
+                <span style={{ color: "#6b7280" }}>|</span>
+
+                <span>
+                  매출이익 :{" "}
+                  <strong style={{ fontWeight: "800" }}>
+                    {totalProfit.toLocaleString()}
+                  </strong>
+                </span>
+              </div>
+            </h3>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              gap: "10px",
+            }}
+          >
+            {/* 1번째 줄 : 비교 버튼 */}
+            <div>
               <button
                 onClick={() => {
-                  setEditData(null);
-                  setOpenModal(true);
+                  setSavedFilters((prev) => [
+                    ...prev,
+                    {
+                      id: Date.now(),
+                      filters: { ...filterData },
+                      multiFields: { ...multiFields },
+                      multiSelected: { ...multiSelected },
+                      periodFilter: usePeriodFilter
+                        ? { ...periodFilter }
+                        : null,
+                      resultCount: resultRows.length,
+                      // resultRows: resultRows,
+                    },
+                  ]);
+
+                  showToast(`✅ 필터 ${savedFilters.length + 1} 저장됨`);
                 }}
                 style={{
-                  padding: "6px 12px",
+                  padding: "8px 18px",
+                  marginRight: "8px",
                   fontSize: "11px",
                   cursor: "pointer",
-                  background: "#2563eb",
+                  background: "#fff",
+                  color: "#374151",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "6px",
+                  fontWeight: "600",
+                }}
+              >
+                필터저장
+                <span style={{ marginLeft: "4px" }}>
+                  ({savedFilters.length})
+                </span>
+              </button>
+
+              <button
+                onClick={() => {
+                  if (savedFilters.length === 0) {
+                    showToast("　저장된 필터가 없습니다❗");
+                    return;
+                  }
+
+                  const result = makeCompareData(savedFilters, masterData.rows);
+
+                  setCompareResult(result);
+                  setCompareOpen(true);
+                }}
+                style={{
+                  padding: "8px 18px",
+                  fontSize: "11px",
+                  marginRight: "8px",
+                  cursor: "pointer",
+                  background: "#9DA3AF",
                   color: "#fff",
                   border: "none",
                   borderRadius: "6px",
                   fontWeight: "600",
-                  marginLeft: "15px",
                 }}
               >
-                + 사업등록
+                조회
               </button>
-            </span>
 
-            {/* 매출 + 매출이익 */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                fontSize: "24x",
-                // color: "#6b7280",
-                fontWeight: "600",
-              }}
-            >
-              <span>
-                매출 :{" "}
-                <strong style={{ fontWeight: "800" }}>
-                  {totalSales.toLocaleString()}
-                </strong>
-              </span>
-
-              <span style={{ color: "#6b7280" }}>|</span>
-
-              <span>
-                매출이익 :{" "}
-                <strong style={{ fontWeight: "800" }}>
-                  {totalProfit.toLocaleString()}
-                </strong>
-              </span>
+              <button
+                onClick={handleResetCompare}
+                style={{
+                  padding: "8px 18px",
+                  fontSize: "11px",
+                  background: "#dc2626",
+                  color: "#fff",
+                  border: "1px solid #ef4444",
+                  borderRadius: "6px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                필터삭제
+              </button>
             </div>
-          </h3>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end",
-            gap: "10px",
-          }}
-        >
-          {/* 1번째 줄 : 비교 버튼 */}
-          <div>
-            <button
-              onClick={() => {
-                setSavedFilters((prev) => [
-                  ...prev,
-                  {
-                    id: Date.now(),
-                    filters: { ...filterData },
-                    multiFields: { ...multiFields },
-                    multiSelected: { ...multiSelected },
-                    periodFilter: usePeriodFilter ? { ...periodFilter } : null,
-                    resultCount: resultRows.length,
-                    // resultRows: resultRows,
-                  },
-                ]);
-
-                showToast(`✅ 필터 ${savedFilters.length + 1} 저장됨`);
-              }}
-              style={{
-                padding: "8px 18px",
-                marginRight: "8px",
-                fontSize: "11px",
-                cursor: "pointer",
-                background: "#fff",
-                color: "#374151",
-                border: "1px solid #d1d5db",
-                borderRadius: "6px",
-                fontWeight: "600",
-              }}
-            >
-              필터저장
-              <span style={{ marginLeft: "4px" }}>({savedFilters.length})</span>
-            </button>
-
-            <button
-              onClick={() => {
-                if (savedFilters.length === 0) {
-                  showToast("　저장된 필터가 없습니다❗");
-                  return;
-                }
-
-                const result = makeCompareData(savedFilters, masterData.rows);
-
-                setCompareResult(result);
-                setCompareOpen(true);
-              }}
-              style={{
-                padding: "8px 18px",
-                fontSize: "11px",
-                marginRight: "8px",
-                cursor: "pointer",
-                background: "#9DA3AF",
-                color: "#fff",
-                border: "none",
-                borderRadius: "6px",
-                fontWeight: "600",
-              }}
-            >
-              조회
-            </button>
-
-            <button
-              onClick={handleResetCompare}
-              style={{
-                padding: "8px 18px",
-                fontSize: "11px",
-                background: "#dc2626",
-                color: "#fff",
-                border: "1px solid #ef4444",
-                borderRadius: "6px",
-                fontWeight: "600",
-                cursor: "pointer",
-              }}
-            >
-              필터삭제
-            </button>
           </div>
         </div>
-      </div>
-      <table className="business-table" border="2">
-        <thead>
-          <tr>
-            <th>No</th>
+        <table className="business-table" border="2">
+          <thead>
+            <tr>
+              <th>No</th>
 
-            {basicColumns.map((key) => (
-              <th key={key}>{key}</th>
-            ))}
+              {basicColumns.map((key) => (
+                <th key={key}>{key}</th>
+              ))}
 
-            <th
-            // style={{
-            //   background: "#f5f5f5",
-            //   whiteSpace: "nowrap",
-            // }}
-            >
-              매출
-            </th>
-            <th>수정/삭제</th>
-          </tr>
-        </thead>
+              <th
+              // style={{
+              //   background: "#f5f5f5",
+              //   whiteSpace: "nowrap",
+              // }}
+              >
+                매출
+              </th>
+              <th>수정/삭제</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {resultRows.map((row, index) => {
-            const metricList = Array.isArray(row.metricList)
-              ? row.metricList
-              : [];
+          <tbody>
+            {resultRows.map((row, index) => {
+              const metricList = Array.isArray(row.metricList)
+                ? row.metricList
+                : [];
 
-            const metricCount = metricList.length;
+              const metricCount = metricList.length;
 
-            return (
-              <React.Fragment key={index}>
-                <tr
-                  style={{
-                    backgroundColor: colorMap[row.key] || "transparent",
-                  }}
-                >
-                  <td>{index + 1}</td>
-                  {basicColumns.map((key) => (
-                    <td
-                      key={key}
-                      title={String(row.basic[key] ?? "")}
-                      className={
-                        key === "확도"
-                          ? row.basic[key] === "확정(100%)"
-                            ? "accuracy-high"
-                            : row.basic[key] === "0"
-                              ? "accuracy-zero"
-                              : "accuracy-mid"
-                          : ""
-                      }
-                    >
-                      {key === "구분"
-                        ? String(row.basic[key] ?? "")
-                            .replace("솔루션 - ", "")
-                            .trim()
-                        : row.basic[key]}
-                    </td>
-                  ))}
-
-                  <td
+              return (
+                <React.Fragment key={index}>
+                  <tr
                     style={{
-                      textAlign: "center",
+                      backgroundColor: colorMap[row.key] || "transparent",
                     }}
                   >
-                    <button
-                      className="detail-button"
-                      onClick={() => toggleRow(index)}
-                    >
-                      {expandedRows[index] ? "▲" : "▼"}
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => handleEdit(row)}
+                    <td>{index + 1}</td>
+                    {basicColumns.map((key) => (
+                      <td
+                        key={key}
+                        title={String(row.basic[key] ?? "")}
+                        className={
+                          key === "확도"
+                            ? row.basic[key] === "확정(100%)"
+                              ? "accuracy-high"
+                              : row.basic[key] === "0"
+                                ? "accuracy-zero"
+                                : "accuracy-mid"
+                            : ""
+                        }
+                      >
+                        {key === "구분"
+                          ? String(row.basic[key] ?? "")
+                              .replace("솔루션 - ", "")
+                              .trim()
+                          : row.basic[key]}
+                      </td>
+                    ))}
+
+                    <td
                       style={{
-                        padding: "1px 10px",
-                        fontSize: "10px",
-                        cursor: "pointer",
+                        textAlign: "center",
                       }}
                     >
-                      수정
-                    </button>
+                      <button
+                        className="detail-button"
+                        onClick={() => toggleRow(index)}
+                      >
+                        {expandedRows[index] ? "▲" : "▼"}
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => handleEdit(row)}
+                        style={{
+                          padding: "1px 10px",
+                          fontSize: "10px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        수정
+                      </button>
 
-                    <button
-                      onClick={() => handleDelete(row)}
-                      disabled={deleting}
-                      style={{
-                        padding: "1px 10px",
-                        fontSize: "10px",
-                        marginLeft: "4px",
-                        cursor: deleting ? "not-allowed" : "pointer",
-                      }}
-                    >
-                      {deleting ? "삭제 중.." : "삭제"}
-                    </button>
-                  </td>
-                </tr>
-
-                {expandedRows[index] && (
-                  <tr>
-                    <td colSpan={basicColumns.length + 3}>
-                      <table className="metric-detail-table">
-                        <colgroup>
-                          {/* 구분 */}
-                          <col style={{ width: "60px" }} />
-
-                          {/* 수주월 */}
-                          <col style={{ width: "45px" }} />
-
-                          {/* 매출월 */}
-                          <col style={{ width: "45px" }} />
-
-                          {/* 상세 지표 */}
-                          {detailMetricColumns.map((key) => (
-                            <col key={key} style={{ width: "45px" }} />
-                          ))}
-
-                          {/* 비고 */}
-                          <col style={{ width: "150px" }} />
-                        </colgroup>
-                        <thead>
-                          <tr>
-                            <th>구분</th>
-
-                            <th rowSpan="1">수주월</th>
-                            <th rowSpan="1">매출월</th>
-
-                            {detailMetricColumns.map((key) => (
-                              <th key={key}>{key}</th>
-                            ))}
-
-                            <th rowSpan={metricCount}>비고</th>
-                          </tr>
-                        </thead>
-
-                        <tbody>
-                          {metricList.map((metricRow, mIndex) => (
-                            <tr key={mIndex}>
-                              <td>{metricRow.metric}</td>
-
-                              {mIndex === 0 && (
-                                <>
-                                  <td rowSpan={metricCount}>
-                                    {metricRow["수주월"]}
-                                  </td>
-
-                                  <td rowSpan={metricCount}>
-                                    {metricRow["매출월"]}
-                                  </td>
-                                </>
-                              )}
-
-                              {detailMetricColumns.map((key) => (
-                                <td
-                                  key={key}
-                                  title={String(metricRow[key] ?? "")}
-                                >
-                                  {metricRow[key]}
-                                </td>
-                              ))}
-                              {mIndex === 0 && (
-                                <td
-                                  rowSpan={metricCount}
-                                  title={String(metricRow["비고"] ?? "")}
-                                >
-                                  {metricRow["비고"]}
-                                </td>
-                              )}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                      <button
+                        onClick={() => handleDelete(row)}
+                        disabled={deleting}
+                        style={{
+                          padding: "1px 10px",
+                          fontSize: "10px",
+                          marginLeft: "4px",
+                          cursor: deleting ? "not-allowed" : "pointer",
+                        }}
+                      >
+                        {deleting ? "삭제 중.." : "삭제"}
+                      </button>
                     </td>
                   </tr>
-                )}
-              </React.Fragment>
-            );
-          })}
-        </tbody>
-      </table>
-      {openModal && (
-        <BusinessModal
-          open={openModal}
-          onClose={() => {
-            setOpenModal(false);
-            setEditData(null);
-          }}
-          masterData={masterData}
-          reloadData={reloadData}
-          editData={editData}
-          showToast={showToast}
+
+                  {expandedRows[index] && (
+                    <tr>
+                      <td colSpan={basicColumns.length + 3}>
+                        <table className="metric-detail-table">
+                          <colgroup>
+                            {/* 구분 */}
+                            <col style={{ width: "60px" }} />
+
+                            {/* 수주월 */}
+                            <col style={{ width: "45px" }} />
+
+                            {/* 매출월 */}
+                            <col style={{ width: "45px" }} />
+
+                            {/* 상세 지표 */}
+                            {detailMetricColumns.map((key) => (
+                              <col key={key} style={{ width: "45px" }} />
+                            ))}
+
+                            {/* 비고 */}
+                            <col style={{ width: "150px" }} />
+                          </colgroup>
+                          <thead>
+                            <tr>
+                              <th>구분</th>
+
+                              <th rowSpan="1">수주월</th>
+                              <th rowSpan="1">매출월</th>
+
+                              {detailMetricColumns.map((key) => (
+                                <th key={key}>{key}</th>
+                              ))}
+
+                              <th rowSpan={metricCount}>비고</th>
+                            </tr>
+                          </thead>
+
+                          <tbody>
+                            {metricList.map((metricRow, mIndex) => (
+                              <tr key={mIndex}>
+                                <td>{metricRow.metric}</td>
+
+                                {mIndex === 0 && (
+                                  <>
+                                    <td rowSpan={metricCount}>
+                                      {metricRow["수주월"]}
+                                    </td>
+
+                                    <td rowSpan={metricCount}>
+                                      {metricRow["매출월"]}
+                                    </td>
+                                  </>
+                                )}
+
+                                {detailMetricColumns.map((key) => (
+                                  <td
+                                    key={key}
+                                    title={String(metricRow[key] ?? "")}
+                                  >
+                                    {metricRow[key]}
+                                  </td>
+                                ))}
+                                {mIndex === 0 && (
+                                  <td
+                                    rowSpan={metricCount}
+                                    title={String(metricRow["비고"] ?? "")}
+                                  >
+                                    {metricRow["비고"]}
+                                  </td>
+                                )}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+        {openModal && (
+          <BusinessModal
+            open={openModal}
+            onClose={() => {
+              setOpenModal(false);
+              setEditData(null);
+            }}
+            masterData={masterData}
+            reloadData={reloadData}
+            editData={editData}
+            showToast={showToast}
+          />
+        )}
+        <CompareModal
+          open={compareOpen}
+          onClose={() => setCompareOpen(false)}
+          data={compareResult}
+          savedFilters={savedFilters}
+          usePeriodFilter={usePeriodFilter}
+          periodFilter={periodFilter}
         />
-      )}
-      <CompareModal
-        open={compareOpen}
-        onClose={() => setCompareOpen(false)}
-        data={compareResult}
-        savedFilters={savedFilters}
-        usePeriodFilter={usePeriodFilter}
-        periodFilter={periodFilter}
-      />
-      {deleteTarget && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.3)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10000,
-          }}
-        >
+        {deleteTarget && (
           <div
             style={{
-              background: "#fff",
-              padding: "25px 35px",
-              borderRadius: "12px",
-              textAlign: "center",
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.3)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 10000,
             }}
           >
-            <div style={{ marginBottom: "20px", fontWeight: "600" }}>
-              삭제하시겠습니까?
+            <div
+              style={{
+                background: "#fff",
+                padding: "25px 35px",
+                borderRadius: "12px",
+                textAlign: "center",
+              }}
+            >
+              <div style={{ marginBottom: "20px", fontWeight: "600" }}>
+                삭제하시겠습니까?
+              </div>
+
+              <button
+                onClick={async () => {
+                  try {
+                    setDeleting(true);
+
+                    // await deleteBusiness(deleteTarget.basic.id);
+
+                    // showToast("삭제 완료");
+
+                    // await reloadData();.
+
+                    deleteBusiness(deleteTarget.basic.id)
+                      .then(() => {
+                        reloadData();
+                      })
+                      .catch(() => {
+                        showToast("삭제 실패");
+                      });
+
+                    showToast("삭제 완료");
+                    setDeleteTarget(null);
+                  } catch (error) {
+                    showToast("삭제 실패");
+                  } finally {
+                    setDeleting(false);
+                    setDeleteTarget(null);
+                  }
+                }}
+                disabled={deleting}
+                style={{
+                  background: deleting ? "#9ca3af" : "#dc2626",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "8px 20px",
+                  marginRight: "10px",
+                  cursor: deleting ? "not-allowed" : "pointer",
+                }}
+              >
+                {deleting ? "삭제 중.." : "삭제"}
+              </button>
+
+              <button
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleting}
+                style={{
+                  background: "#f1f5f9",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "8px 20px",
+                  cursor: deleting ? "not-allowed" : "pointer",
+                  opacity: deleting ? 0.5 : 1,
+                }}
+              >
+                취소
+              </button>
             </div>
-
-            <button
-              onClick={async () => {
-                try {
-                  setDeleting(true);
-
-                  // await deleteBusiness(deleteTarget.basic.id);
-
-                  // showToast("삭제 완료");
-
-                  // await reloadData();.
-
-                  deleteBusiness(deleteTarget.basic.id)
-                    .then(() => {
-                      reloadData();
-                    })
-                    .catch(() => {
-                      showToast("삭제 실패");
-                    });
-
-                  showToast("삭제 완료");
-                  setDeleteTarget(null);
-                } catch (error) {
-                  showToast("삭제 실패");
-                } finally {
-                  setDeleting(false);
-                  setDeleteTarget(null);
-                }
-              }}
-              disabled={deleting}
-              style={{
-                background: deleting ? "#9ca3af" : "#dc2626",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                padding: "8px 20px",
-                marginRight: "10px",
-                cursor: deleting ? "not-allowed" : "pointer",
-              }}
-            >
-              {deleting ? "삭제 중.." : "삭제"}
-            </button>
-
-            <button
-              onClick={() => setDeleteTarget(null)}
-              disabled={deleting}
-              style={{
-                background: "#f1f5f9",
-                border: "none",
-                borderRadius: "8px",
-                padding: "8px 20px",
-                cursor: deleting ? "not-allowed" : "pointer",
-                opacity: deleting ? 0.5 : 1,
-              }}
-            >
-              취소
-            </button>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </Profiler>
   );
 }
