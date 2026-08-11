@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import "./BusinessList.css";
 import BusinessFilter from "../components/BusinessFilter";
 import BusinessModal from "../components/BusinessModal";
@@ -59,9 +59,11 @@ export default function BusinessList({ masterData, reloadData }) {
   };
 
   const handleResetCompare = () => {
-    setSavedFilters([]);
-
+    // 저장된 필터 먼저 완전히 삭제
     sessionStorage.removeItem("savedFilters");
+
+    // 상태 초기화
+    setSavedFilters([]);
 
     setSaved1(false);
     setSaved2(false);
@@ -241,6 +243,11 @@ export default function BusinessList({ masterData, reloadData }) {
     return String(rowValue) === String(filterValue);
   };
 
+  const filterKeys = Object.keys(filterData);
+  const activeMultiFields = Object.keys(multiFields).filter(
+    (field) => multiFields[field],
+  );
+
   const handleSearch = () => {
     const filtered = masterData.rows.filter((row) => {
       // 조회기간 금액 없는 사업 제외
@@ -251,9 +258,7 @@ export default function BusinessList({ masterData, reloadData }) {
       // ======================
       // 다중 연도 필터
       // ======================
-      for (const field in multiFields) {
-        if (!multiFields[field]) continue;
-
+      for (const field of activeMultiFields) {
         const selected = multiSelected[field];
 
         if (!selected || selected.length === 0) {
@@ -263,13 +268,12 @@ export default function BusinessList({ masterData, reloadData }) {
         const value =
           row[field] === "" || row[field] == null ? "(공백)" : row[field];
 
-        if (!selected.some((item) => String(item) === String(value)))
+        if (!selected.some((item) => String(item) === String(value))) {
           return false;
+        }
       }
 
-      // 일반 select 필터
-      return Object.keys(filterData).every((key) => {
-        // 다중 연도 사용중이면 select 무시
+      return filterKeys.every((key) => {
         if (multiFields[key]) {
           return true;
         }
@@ -313,30 +317,32 @@ export default function BusinessList({ masterData, reloadData }) {
       map[key].metricList.push(row);
     });
 
+    const periodMonths =
+      usePeriodFilter && periodFilter.start && periodFilter.end
+        ? getPeriodMonths(periodFilter.start, periodFilter.end)
+        : [];
+
     const filteredGrouped = grouped.filter((group) => {
       if (!usePeriodFilter || !periodFilter.start || !periodFilter.end) {
         return true;
       }
 
-      const months = getPeriodMonths(periodFilter.start, periodFilter.end);
+      const metricRow = group.metrics["매출"];
 
-      return group.metricList.some((metricRow) => {
-        // 매출만 검사
-        if (metricRow.metric !== "매출") {
+      if (!metricRow) {
+        return false;
+      }
+
+      return periodMonths.some((m) => {
+        if (String(group.basic["연도"]) !== String(m.year)) {
           return false;
         }
 
-        return months.some((m) => {
-          if (String(group.basic["연도"]) !== String(m.year)) {
-            return false;
-          }
+        const value = Number(
+          String(metricRow[m.month + "월"] || 0).replace(/,/g, ""),
+        );
 
-          const value = Number(
-            String(metricRow[m.month + "월"] || 0).replace(/,/g, ""),
-          );
-
-          return value !== 0;
-        });
+        return value !== 0;
       });
     });
 
@@ -352,21 +358,7 @@ export default function BusinessList({ masterData, reloadData }) {
 
     setColorMap(colorMap);
 
-    console.log("filteredGrouped:", filteredGrouped);
-    console.log("filteredGrouped 배열 여부:", Array.isArray(filteredGrouped));
-
-    if (Array.isArray(filteredGrouped)) {
-      console.log(
-        "metricList 확인:",
-        filteredGrouped.map((g) => ({
-          key: g.key,
-          isArray: Array.isArray(g.metricList),
-          metricList: g.metricList,
-        })),
-      );
-    }
-
-    setResultRows(filteredGrouped);
+    if (Array.isArray(filteredGrouped)) setResultRows(filteredGrouped);
     setExpandedRows({});
 
     if (usePeriodFilter && periodFilter.start && periodFilter.end) {
@@ -409,13 +401,15 @@ export default function BusinessList({ masterData, reloadData }) {
 
   useEffect(() => {
     try {
+      if (savedFilters.length === 0) {
+        sessionStorage.removeItem("savedFilters");
+        return;
+      }
+
       sessionStorage.setItem("savedFilters", JSON.stringify(savedFilters));
     } catch (error) {
       if (error.name === "QuotaExceededError") {
-        console.warn("저장된 필터 용량 초과");
         showToast("저장된 필터가 너무 많습니다. 필터삭제를 눌러주세요.");
-      } else {
-        console.error(error);
       }
     }
   }, [savedFilters]);
@@ -500,61 +494,87 @@ export default function BusinessList({ masterData, reloadData }) {
     },
   };
 
-  const totalSales = resultRows.reduce((sum, group) => {
-    const row = group.metricList?.find((item) => item.metric === "매출");
+  const periodMonths =
+    usePeriodFilter && periodFilter.start && periodFilter.end
+      ? getPeriodMonths(periodFilter.start, periodFilter.end)
+      : [];
 
-    if (!row) return sum;
+  const totals = resultRows.reduce(
+    (acc, group) => {
+      const salesRow = group.metricList?.find((item) => item.metric === "매출");
 
-    // 조회기간 적용
-    if (usePeriodFilter && periodFilter.start && periodFilter.end) {
-      const months = getPeriodMonths(periodFilter.start, periodFilter.end);
+      const profitRow = group.metricList?.find(
+        (item) => item.metric === "매출이익",
+      );
 
-      return (
-        sum +
-        months.reduce((monthSum, m) => {
-          if (String(group.basic["연도"]) !== String(m.year)) {
-            return monthSum;
-          }
+      // 조회기간 적용
+      if (usePeriodFilter && periodFilter.start && periodFilter.end) {
+        if (salesRow) {
+          acc.sales += periodMonths.reduce((sum, m) => {
+            if (String(group.basic["연도"]) !== String(m.year)) {
+              return sum;
+            }
 
-          return (
-            monthSum +
-            Number(String(row[`${m.month}월`] || 0).replace(/,/g, ""))
-          );
-        }, 0)
+            return (
+              sum +
+              Number(String(salesRow[`${m.month}월`] || 0).replace(/,/g, ""))
+            );
+          }, 0);
+        }
+
+        if (profitRow) {
+          acc.profit += periodMonths.reduce((sum, m) => {
+            if (String(group.basic["연도"]) !== String(m.year)) {
+              return sum;
+            }
+
+            return (
+              sum +
+              Number(String(profitRow[`${m.month}월`] || 0).replace(/,/g, ""))
+            );
+          }, 0);
+        }
+
+        return acc;
+      }
+
+      // 조회기간 미적용 → 연간계
+      if (salesRow) {
+        acc.sales += Number(String(salesRow["연간계"] || 0).replace(/,/g, ""));
+      }
+
+      if (profitRow) {
+        acc.profit += Number(
+          String(profitRow["연간계"] || 0).replace(/,/g, ""),
+        );
+      }
+
+      return acc;
+    },
+    { sales: 0, profit: 0 },
+  );
+
+  const totalSales = totals.sales;
+  const totalProfit = totals.profit;
+
+  const detailMetricColumns = useMemo(() => {
+    // 조회기간 미적용 → 기존처럼 전체 월 표시
+    if (!usePeriodFilter || !periodFilter.start || !periodFilter.end) {
+      return metricColumns.filter(
+        (key) => key !== "수주월" && key !== "매출월" && key !== "비고",
       );
     }
 
-    // 조회기간 미적용 → 연간계
-    return sum + Number(String(row["연간계"] || 0).replace(/,/g, ""));
-  }, 0);
+    // 조회기간 적용 → 선택한 기간의 월만 표시
+    const months = getPeriodMonths(periodFilter.start, periodFilter.end);
 
-  const totalProfit = resultRows.reduce((sum, group) => {
-    const row = group.metricList?.find((item) => item.metric === "매출이익");
+    const monthKeys = months.map((m) => `${m.month}월`);
 
-    if (!row) return sum;
-
-    // 조회기간 적용
-    if (usePeriodFilter && periodFilter.start && periodFilter.end) {
-      const months = getPeriodMonths(periodFilter.start, periodFilter.end);
-
-      return (
-        sum +
-        months.reduce((monthSum, m) => {
-          if (String(group.basic["연도"]) !== String(m.year)) {
-            return monthSum;
-          }
-
-          return (
-            monthSum +
-            Number(String(row[`${m.month}월`] || 0).replace(/,/g, ""))
-          );
-        }, 0)
-      );
-    }
-
-    // 조회기간 미적용 → 연간계
-    return sum + Number(String(row["연간계"] || 0).replace(/,/g, ""));
-  }, 0);
+    return [
+      ...monthKeys.filter((key) => metricColumns.includes(key)),
+      "연간계",
+    ];
+  }, [metricColumns, usePeriodFilter, periodFilter.start, periodFilter.end]);
 
   return (
     <div
@@ -809,7 +829,7 @@ export default function BusinessList({ masterData, reloadData }) {
                     multiSelected: { ...multiSelected },
                     periodFilter: usePeriodFilter ? { ...periodFilter } : null,
                     resultCount: resultRows.length,
-                    resultRows: resultRows,
+                    // resultRows: resultRows,
                   },
                 ]);
 
@@ -898,147 +918,137 @@ export default function BusinessList({ masterData, reloadData }) {
         </thead>
 
         <tbody>
-          {resultRows.map((row, index) => (
-            <React.Fragment key={index}>
-              <tr
-                style={{
-                  backgroundColor: colorMap[row.key] || "transparent",
-                }}
-              >
-                <td>{index + 1}</td>
-                {basicColumns.map((key) => (
-                  <td
-                    key={key}
-                    title={String(row.basic[key] ?? "")}
-                    className={
-                      key === "확도"
-                        ? row.basic[key] === "확정(100%)"
-                          ? "accuracy-high"
-                          : row.basic[key] === "0"
-                            ? "accuracy-zero"
-                            : "accuracy-mid"
-                        : ""
-                    }
-                  >
-                    {key === "구분"
-                      ? String(row.basic[key] ?? "")
-                          .replace("솔루션 - ", "")
-                          .trim()
-                      : row.basic[key]}
-                  </td>
-                ))}
+          {resultRows.map((row, index) => {
+            const metricList = Array.isArray(row.metricList)
+              ? row.metricList
+              : [];
 
-                <td
+            const metricCount = metricList.length;
+
+            return (
+              <React.Fragment key={index}>
+                <tr
                   style={{
-                    textAlign: "center",
+                    backgroundColor: colorMap[row.key] || "transparent",
                   }}
                 >
-                  <button
-                    className="detail-button"
-                    onClick={() => toggleRow(index)}
-                  >
-                    {expandedRows[index] ? "▲" : "▼"}
-                  </button>
-                </td>
-                <td>
-                  <button
-                    onClick={() => handleEdit(row)}
+                  <td>{index + 1}</td>
+                  {basicColumns.map((key) => (
+                    <td
+                      key={key}
+                      title={String(row.basic[key] ?? "")}
+                      className={
+                        key === "확도"
+                          ? row.basic[key] === "확정(100%)"
+                            ? "accuracy-high"
+                            : row.basic[key] === "0"
+                              ? "accuracy-zero"
+                              : "accuracy-mid"
+                          : ""
+                      }
+                    >
+                      {key === "구분"
+                        ? String(row.basic[key] ?? "")
+                            .replace("솔루션 - ", "")
+                            .trim()
+                        : row.basic[key]}
+                    </td>
+                  ))}
+
+                  <td
                     style={{
-                      padding: "1px 10px",
-                      fontSize: "10px",
-                      cursor: "pointer",
+                      textAlign: "center",
                     }}
                   >
-                    수정
-                  </button>
+                    <button
+                      className="detail-button"
+                      onClick={() => toggleRow(index)}
+                    >
+                      {expandedRows[index] ? "▲" : "▼"}
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => handleEdit(row)}
+                      style={{
+                        padding: "1px 10px",
+                        fontSize: "10px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      수정
+                    </button>
 
-                  <button
-                    onClick={() => handleDelete(row)}
-                    disabled={deleting}
-                    style={{
-                      padding: "1px 10px",
-                      fontSize: "10px",
-                      marginLeft: "4px",
-                      cursor: deleting ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    {deleting ? "삭제 중.." : "삭제"}
-                  </button>
-                </td>
-              </tr>
+                    <button
+                      onClick={() => handleDelete(row)}
+                      disabled={deleting}
+                      style={{
+                        padding: "1px 10px",
+                        fontSize: "10px",
+                        marginLeft: "4px",
+                        cursor: deleting ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      {deleting ? "삭제 중.." : "삭제"}
+                    </button>
+                  </td>
+                </tr>
 
-              {expandedRows[index] && (
-                <tr>
-                  <td colSpan={basicColumns.length + 3}>
-                    <table className="metric-detail-table">
-                      <colgroup>
-                        {/* 구분 */}
-                        <col style={{ width: "60px" }} />
-                        {/* 수주월 */}
-                        <col style={{ width: "45px" }} />
-                        {/* 매출월 */}
-                        <col style={{ width: "45px" }} />
-                        {/* 1월 ~ 12월 */}
-                        {Array.from({ length: 12 }).map((_, i) => (
-                          <col key={i} style={{ width: "45px" }} />
-                        ))}
-                        {/* 연간계 */}
-                        <col style={{ width: "55px" }} />
-                        {/* 11월 이후
-                        <col style={{ width: "70px" }} /> */}
-                        {/* 비고 */}
-                        <col style={{ width: "150px" }} />
-                      </colgroup>
-                      <thead>
-                        <tr>
-                          <th>구분</th>
+                {expandedRows[index] && (
+                  <tr>
+                    <td colSpan={basicColumns.length + 3}>
+                      <table className="metric-detail-table">
+                        <colgroup>
+                          {/* 구분 */}
+                          <col style={{ width: "60px" }} />
 
-                          <th rowSpan="1">수주월</th>
-                          <th rowSpan="1">매출월</th>
+                          {/* 수주월 */}
+                          <col style={{ width: "45px" }} />
 
-                          {metricColumns
-                            .filter(
-                              (key) =>
-                                key !== "수주월" &&
-                                key !== "매출월" &&
-                                key !== "비고",
-                            )
-                            .map((key) => (
+                          {/* 매출월 */}
+                          <col style={{ width: "45px" }} />
+
+                          {/* 상세 지표 */}
+                          {detailMetricColumns.map((key) => (
+                            <col key={key} style={{ width: "45px" }} />
+                          ))}
+
+                          {/* 비고 */}
+                          <col style={{ width: "150px" }} />
+                        </colgroup>
+                        <thead>
+                          <tr>
+                            <th>구분</th>
+
+                            <th rowSpan="1">수주월</th>
+                            <th rowSpan="1">매출월</th>
+
+                            {detailMetricColumns.map((key) => (
                               <th key={key}>{key}</th>
                             ))}
 
-                          <th rowSpan={row.metricList.length}>비고</th>
-                        </tr>
-                      </thead>
+                            <th rowSpan={metricCount}>비고</th>
+                          </tr>
+                        </thead>
 
-                      <tbody>
-                        {(Array.isArray(row.metricList)
-                          ? row.metricList
-                          : []
-                        ).map((metricRow, mIndex) => (
-                          <tr key={mIndex}>
-                            <td>{metricRow.metric}</td>
+                        <tbody>
+                          {metricList.map((metricRow, mIndex) => (
+                            <tr key={mIndex}>
+                              <td>{metricRow.metric}</td>
 
-                            {mIndex === 0 && (
-                              <>
-                                <td rowSpan={row.metricList.length}>
-                                  {metricRow["수주월"]}
-                                </td>
+                              {mIndex === 0 && (
+                                <>
+                                  <td rowSpan={metricCount}>
+                                    {metricRow["수주월"]}
+                                  </td>
 
-                                <td rowSpan={row.metricList.length}>
-                                  {metricRow["매출월"]}
-                                </td>
-                              </>
-                            )}
+                                  <td rowSpan={metricCount}>
+                                    {metricRow["매출월"]}
+                                  </td>
+                                </>
+                              )}
 
-                            {metricColumns
-                              .filter(
-                                (key) =>
-                                  key !== "수주월" &&
-                                  key !== "매출월" &&
-                                  key !== "비고",
-                              )
-                              .map((key) => (
+                              {detailMetricColumns.map((key) => (
                                 <td
                                   key={key}
                                   title={String(metricRow[key] ?? "")}
@@ -1046,23 +1056,24 @@ export default function BusinessList({ masterData, reloadData }) {
                                   {metricRow[key]}
                                 </td>
                               ))}
-                            {mIndex === 0 && (
-                              <td
-                                rowSpan={row.metricList.length}
-                                title={String(metricRow["비고"] ?? "")}
-                              >
-                                {metricRow["비고"]}
-                              </td>
-                            )}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-              )}
-            </React.Fragment>
-          ))}
+                              {mIndex === 0 && (
+                                <td
+                                  rowSpan={metricCount}
+                                  title={String(metricRow["비고"] ?? "")}
+                                >
+                                  {metricRow["비고"]}
+                                </td>
+                              )}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            );
+          })}
         </tbody>
       </table>
       {openModal && (
@@ -1132,7 +1143,6 @@ export default function BusinessList({ masterData, reloadData }) {
                   showToast("삭제 완료");
                   setDeleteTarget(null);
                 } catch (error) {
-                  console.error(error);
                   showToast("삭제 실패");
                 } finally {
                   setDeleting(false);

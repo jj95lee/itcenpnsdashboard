@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo, useCallback } from "react";
 
 export default function BasicInfo({
   masterData,
@@ -63,35 +63,40 @@ export default function BasicInfo({
     }));
   };
 
-  // 필터 옵션 생성
-  const getOptions = (field) => {
-    let parentFields = [];
+  const handleMultiChange = (field, value, checked) => {
+    setMultiSelected((prev) => {
+      const current = prev[field] || [];
 
-    const index = hierarchy.indexOf(field);
-
-    if (index !== -1) {
-      parentFields = hierarchy.slice(0, index);
-    }
-
-    if (field === "수주월" || field === "매출월") {
-      parentFields = [...hierarchy];
-    }
-
-    const filtered = masterData.rows.filter((row) => {
-      return parentFields.every((key) => {
-        if (!formData[key]) return true;
-
-        if (formData[key] === "(공백)") {
-          return row[key] === "" || row[key] == null;
+      if (checked) {
+        if (current.includes(String(value))) {
+          return prev;
         }
 
-        return String(row[key]) === String(formData[key]);
-      });
-    });
+        return {
+          ...prev,
+          [field]: [...current, String(value)],
+        };
+      }
 
+      const next = current.filter((item) => item !== String(value));
+
+      if (next.length === current.length) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        [field]: next,
+      };
+    });
+  };
+
+  const rows = masterData?.rows || [];
+
+  const getOptions = (field, filteredRows) => {
     const values = [
       ...new Set(
-        filtered
+        filteredRows
           .map((row) => row[field])
           .filter(
             (value) => value !== "" && value !== null && value !== undefined,
@@ -121,7 +126,7 @@ export default function BasicInfo({
       values.sort();
     }
 
-    const hasEmpty = filtered.some(
+    const hasEmpty = filteredRows.some(
       (row) => row[field] === "" || row[field] == null,
     );
 
@@ -131,36 +136,273 @@ export default function BasicInfo({
 
     return values;
   };
+  const getFilteredRows = useCallback(
+    (parentFields = []) => {
+      return rows.filter((row) => {
+        return parentFields.every((key) => {
+          const selected = formData[key];
 
-  const yearOptions = getOptions("연도");
+          if (!selected) return true;
 
-  const newSoldOptions = getOptions("New/Sold");
+          if (selected === "(공백)") {
+            return row[key] === "" || row[key] == null;
+          }
 
-  const teamOptions = getOptions("팀");
+          return String(row[key]) === String(selected);
+        });
+      });
+    },
+    [rows, formData],
+  );
+  const yearOptions = useMemo(() => getOptions("연도", rows), [rows]);
 
-  const salesTypeOptions = getOptions("매출유형");
+  const teamRows = useMemo(
+    () => getFilteredRows(["연도"]),
+    [rows, formData.연도],
+  );
 
-  const productOptions = getOptions("구분");
+  const teamOptions = useMemo(() => getOptions("팀", teamRows), [teamRows]);
 
-  const customerTypeOptions = getOptions("고객유형");
+  const newSoldRows = useMemo(
+    () => getFilteredRows(["연도", "팀"]),
+    [rows, formData.연도, formData.팀],
+  );
 
-  const vendorOptions = getOptions("매출처");
+  const newSoldOptions = useMemo(
+    () => getOptions("New/Sold", newSoldRows),
+    [newSoldRows],
+  );
 
-  const customerOptions = getOptions("최종고객");
+  const salesTypeRows = useMemo(
+    () => getFilteredRows(["연도", "팀", "New/Sold"]),
+    [rows, formData.연도, formData.팀, formData["New/Sold"]],
+  );
 
-  const ownerOptions = getOptions("담당자");
+  const salesTypeOptions = useMemo(
+    () => getOptions("매출유형", salesTypeRows),
+    [salesTypeRows],
+  );
 
-  const accuracyOptions = getOptions("확도");
+  const productRows = useMemo(
+    () => getFilteredRows(["연도", "팀", "New/Sold", "매출유형"]),
+    [rows, formData.연도, formData.팀, formData["New/Sold"], formData.매출유형],
+  );
 
-  const orderMonthOptions = getOptions("수주월");
+  const productOptions = useMemo(
+    () => getOptions("구분", productRows),
+    [productRows],
+  );
+  const customerTypeRows = useMemo(
+    () => getFilteredRows(["연도", "팀", "New/Sold", "매출유형", "구분"]),
+    [
+      rows,
+      formData.연도,
+      formData.팀,
+      formData["New/Sold"],
+      formData.매출유형,
+      formData.구분,
+    ],
+  );
 
-  const salesMonthOptions = getOptions("매출월");
+  const customerTypeOptions = useMemo(
+    () => getOptions("고객유형", customerTypeRows),
+    [customerTypeRows],
+  );
 
-  const progressOptions = [
-    { label: "⚪", value: "#FFFFFF" },
-    { label: "🟡", value: "#FFFFCC" },
-    { label: "⚫", value: "#D9D9D9" },
-  ];
+  const vendorRows = useMemo(
+    () =>
+      getFilteredRows([
+        "연도",
+        "팀",
+        "New/Sold",
+        "매출유형",
+        "구분",
+        "고객유형",
+      ]),
+    [
+      rows,
+      formData.연도,
+      formData.팀,
+      formData["New/Sold"],
+      formData.매출유형,
+      formData.구분,
+      formData.고객유형,
+    ],
+  );
+
+  const vendorOptions = useMemo(
+    () => getOptions("매출처", vendorRows),
+    [vendorRows],
+  );
+
+  const customerRows = useMemo(
+    () =>
+      getFilteredRows([
+        "연도",
+        "팀",
+        "New/Sold",
+        "매출유형",
+        "구분",
+        "고객유형",
+        "매출처",
+      ]),
+    [
+      rows,
+      formData.연도,
+      formData.팀,
+      formData["New/Sold"],
+      formData.매출유형,
+      formData.구분,
+      formData.고객유형,
+      formData.매출처,
+    ],
+  );
+
+  const customerOptions = useMemo(
+    () => getOptions("최종고객", customerRows),
+    [customerRows],
+  );
+
+  const ownerRows = useMemo(
+    () =>
+      getFilteredRows([
+        "연도",
+        "팀",
+        "New/Sold",
+        "매출유형",
+        "구분",
+        "고객유형",
+        "매출처",
+        "최종고객",
+      ]),
+    [
+      rows,
+      formData.연도,
+      formData.팀,
+      formData["New/Sold"],
+      formData.매출유형,
+      formData.구분,
+      formData.고객유형,
+      formData.매출처,
+      formData.최종고객,
+    ],
+  );
+
+  const ownerOptions = useMemo(
+    () => getOptions("담당자", ownerRows),
+    [ownerRows],
+  );
+
+  const accuracyRows = useMemo(
+    () =>
+      getFilteredRows([
+        "연도",
+        "팀",
+        "New/Sold",
+        "매출유형",
+        "구분",
+        "고객유형",
+        "매출처",
+        "최종고객",
+        "담당자",
+      ]),
+    [
+      rows,
+      formData.연도,
+      formData.팀,
+      formData["New/Sold"],
+      formData.매출유형,
+      formData.구분,
+      formData.고객유형,
+      formData.매출처,
+      formData.최종고객,
+      formData.담당자,
+    ],
+  );
+
+  const accuracyOptions = useMemo(
+    () => getOptions("확도", accuracyRows),
+    [accuracyRows],
+  );
+
+  const orderMonthRows = useMemo(
+    () =>
+      getFilteredRows([
+        "연도",
+        "팀",
+        "New/Sold",
+        "매출유형",
+        "구분",
+        "고객유형",
+        "매출처",
+        "최종고객",
+        "담당자",
+        "확도",
+      ]),
+    [
+      rows,
+      formData.연도,
+      formData.팀,
+      formData["New/Sold"],
+      formData.매출유형,
+      formData.구분,
+      formData.고객유형,
+      formData.매출처,
+      formData.최종고객,
+      formData.담당자,
+      formData.확도,
+    ],
+  );
+
+  const orderMonthOptions = useMemo(
+    () => getOptions("수주월", orderMonthRows),
+    [orderMonthRows],
+  );
+
+  const salesMonthRows = useMemo(
+    () =>
+      getFilteredRows([
+        "연도",
+        "팀",
+        "New/Sold",
+        "매출유형",
+        "구분",
+        "고객유형",
+        "매출처",
+        "최종고객",
+        "담당자",
+        "확도",
+        "수주월",
+      ]),
+    [
+      rows,
+      formData.연도,
+      formData.팀,
+      formData["New/Sold"],
+      formData.매출유형,
+      formData.구분,
+      formData.고객유형,
+      formData.매출처,
+      formData.최종고객,
+      formData.담당자,
+      formData.확도,
+      formData.수주월,
+    ],
+  );
+
+  const salesMonthOptions = useMemo(
+    () => getOptions("매출월", salesMonthRows),
+    [salesMonthRows],
+  );
+
+  const progressOptions = useMemo(
+    () => [
+      { label: "⚪", value: "#FFFFFF" },
+      { label: "🟡", value: "#FFFFCC" },
+      { label: "⚫", value: "#D9D9D9" },
+    ],
+    [],
+  );
 
   const handleReset = () => {
     isResetting.current = true;
@@ -211,6 +453,8 @@ export default function BasicInfo({
       최종고객: false,
       담당자: false,
       확도: false,
+      수주월: false,
+      매출월: false,
       진행도: false,
     });
 
@@ -240,7 +484,6 @@ export default function BasicInfo({
       : "";
   };
 
-  // 자동 선택
   useEffect(() => {
     if (isResetting.current) {
       isResetting.current = false;
@@ -249,10 +492,15 @@ export default function BasicInfo({
 
     const autoSelect = (field, options) => {
       if (options.length === 1 && !formData[field]) {
-        setFormData((prev) => ({
-          ...prev,
-          [field]: options[0],
-        }));
+        setFormData((prev) => {
+          // 이미 값이 들어갔으면 다시 변경하지 않음
+          if (prev[field]) return prev;
+
+          return {
+            ...prev,
+            [field]: options[0],
+          };
+        });
       }
     };
 
@@ -260,44 +508,44 @@ export default function BasicInfo({
       if (
         multiFields[field] &&
         options.length === 1 &&
-        multiSelected[field].length === 0
+        (!multiSelected[field] || multiSelected[field].length === 0)
       ) {
-        setMultiSelected((prev) => ({
-          ...prev,
-          [field]: [String(options[0])],
-        }));
+        setMultiSelected((prev) => {
+          // 이미 선택되어 있으면 다시 변경하지 않음
+          if (prev[field]?.length > 0) return prev;
+
+          return {
+            ...prev,
+            [field]: [String(options[0])],
+          };
+        });
       }
+    };
+
+    const optionMap = {
+      팀: teamOptions,
+      "New/Sold": newSoldOptions,
+      매출유형: salesTypeOptions,
+      구분: productOptions,
+      고객유형: customerTypeOptions,
+      매출처: vendorOptions,
+      최종고객: customerOptions,
+      담당자: ownerOptions,
+      확도: accuracyOptions,
+      수주월: orderMonthOptions,
+      매출월: salesMonthOptions,
     };
 
     if (!lockYearFilter) {
       autoSelect("연도", yearOptions);
-    }
-    autoSelect("팀", teamOptions);
-    autoSelect("New/Sold", newSoldOptions);
-    autoSelect("매출유형", salesTypeOptions);
-    autoSelect("구분", productOptions);
-    autoSelect("고객유형", customerTypeOptions);
-    autoSelect("매출처", vendorOptions);
-    autoSelect("최종고객", customerOptions);
-    autoSelect("담당자", ownerOptions);
-    autoSelect("확도", accuracyOptions);
-    autoSelect("수주월", orderMonthOptions);
-    autoSelect("매출월", salesMonthOptions);
-    autoSelect("진행도", progressOptions);
-    if (!lockYearFilter) {
       autoMultiSelect("연도", yearOptions);
     }
-    autoMultiSelect("팀", teamOptions);
-    autoMultiSelect("New/Sold", newSoldOptions);
-    autoMultiSelect("매출유형", salesTypeOptions);
-    autoMultiSelect("구분", productOptions);
-    autoMultiSelect("고객유형", customerTypeOptions);
-    autoMultiSelect("매출처", vendorOptions);
-    autoMultiSelect("최종고객", customerOptions);
-    autoMultiSelect("담당자", ownerOptions);
-    autoMultiSelect("확도", accuracyOptions);
-    autoMultiSelect("수주월", orderMonthOptions);
-    autoMultiSelect("매출월", salesMonthOptions);
+
+    Object.entries(optionMap).forEach(([field, options]) => {
+      autoSelect(field, options);
+      autoMultiSelect(field, options);
+    });
+
     autoMultiSelect("진행도", progressOptions);
   }, [
     yearOptions,
@@ -314,7 +562,7 @@ export default function BasicInfo({
     salesMonthOptions,
     progressOptions,
     multiFields,
-    multiSelected,
+    lockYearFilter,
   ]);
 
   return (
@@ -646,19 +894,7 @@ export default function BasicInfo({
                     type="checkbox"
                     checked={multiSelected["New/Sold"].includes(item)}
                     onChange={(e) => {
-                      if (e.target.checked) {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          "New/Sold": [...prev["New/Sold"], item],
-                        }));
-                      } else {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          "New/Sold": prev["New/Sold"].filter(
-                            (v) => v !== item,
-                          ),
-                        }));
-                      }
+                      handleMultiChange("New/Sold", item, e.target.checked);
                     }}
                   />
                 </label>

@@ -17,9 +17,6 @@ function App() {
 
   const reloadData = () => {
     getMasterData().then((data) => {
-      console.log("받은 데이터 개수:", data.rows.length);
-      console.log("마지막 데이터:", data.rows[data.rows.length - 1]);
-
       setMasterData(data);
     });
   };

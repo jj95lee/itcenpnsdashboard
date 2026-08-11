@@ -79,7 +79,6 @@ export default function BusinessModal({
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") {
-        console.log("닫기 실행");
         onClose();
       }
     };
@@ -158,8 +157,6 @@ export default function BusinessModal({
       수주월: getFirstInputMonth("수주"),
       매출월: getFirstInputMonth("매출"),
     });
-
-    console.log("전송할 데이터:", saveRows);
 
     saveBusiness(saveRows)
       .then(() => {

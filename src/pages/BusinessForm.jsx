@@ -215,7 +215,6 @@ export default function BusinessForm({ masterData, reloadData, showToast }) {
         },
       });
     } catch (error) {
-      console.error("등록 오류:", error);
 
       showToast("저장 실패");
     }

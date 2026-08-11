@@ -307,10 +307,6 @@ export function makeCompareData(savedFilters, masterRows) {
 
       return true;
     });
-    console.log("저장된 필터:", filter.filters);
-    console.log("필터 적용 전:", masterRows.length);
-    console.log("필터 적용 후:", filtered.length);
-
     // BusinessList와 동일한 방식으로 그룹화
     const grouped = {};
     const groupedRows = [];
@@ -436,8 +432,6 @@ export function makeCompareData(savedFilters, masterRows) {
       cost,
     };
   });
-
-  console.log("비교 결과:", results);
 
   return [
     {
