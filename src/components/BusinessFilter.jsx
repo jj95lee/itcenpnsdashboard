@@ -2042,8 +2042,8 @@ export default function BasicInfo({
         {/* 초기화 */}
         <div className="reset-box">
           <label>&nbsp;</label>
-
           <button
+            className="business-action-button filter-reset-button"
             onClick={handleReset}
             style={{
               padding: "8px 16px",

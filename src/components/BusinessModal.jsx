@@ -244,6 +244,7 @@ export default function BusinessModal({
           }}
         >
           <button
+            className="business-action-button filter-save-button"
             onClick={onClose}
             style={{
               padding: "10px 22px",
@@ -258,8 +259,8 @@ export default function BusinessModal({
           >
             취소
           </button>
-
           <button
+            className="modal-action-button modal-submit-button"
             onClick={handleSubmit}
             disabled={saving}
             style={{

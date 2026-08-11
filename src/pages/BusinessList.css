@@ -15,7 +15,7 @@
 /* No */
 .business-table th:nth-child(1),
 .business-table td:nth-child(1) {
-  width: 27px;
+  width: 29.2px;
   text-align: center;
 }
 
@@ -28,7 +28,7 @@
 /* new */
 .business-table th:nth-child(3),
 .business-table td:nth-child(3) {
-  width: 52px;
+  width: 48px;
 }
 
 /* 매출유형 */
@@ -46,7 +46,7 @@
 /* 고객유형 */
 .business-table th:nth-child(6),
 .business-table td:nth-child(6) {
-  width: 45px;
+  width: 42px;
 }
 
 /* 매출처 */
@@ -70,20 +70,20 @@
 /* 확도 */
 .business-table th:nth-child(10),
 .business-table td:nth-child(10) {
-  width: 58px;
+  width: 53px;
 }
 
 
 /* 프로젝트 코드 */
 .business-table th:nth-child(11),
 .business-table td:nth-child(11) {
-  width: 66px;
+  width: 60px;
 }
 
 /* 사업명 */
 .business-table th:nth-child(12),
 .business-table td:nth-child(12) {
-  width: 170px;
+  width: 180px;
 }
 
 /* 상세매출 */
@@ -95,7 +95,7 @@
 /* 수정/삭제 */
 .business-table th:last-child,
 .business-table td:last-child {
-  width: 80px;
+  width: 70px;
 }
 
 .metric-detail-table {
@@ -129,4 +129,62 @@
   align-items: center;
   gap: 10px;
   margin-top: 10px;
+}
+
+.business-action-button {
+  transition: background-color 0.15s ease;
+}
+
+/* 사업등록 */
+.business-register-button:hover {
+  background-color: #1d4ed8 !important;
+}
+
+/* 필터저장 */
+.filter-save-button:hover:not(:disabled) {
+  background-color: #d1d5db !important;
+}
+
+/* 조회 */
+.filter-search-button:hover {
+  background-color: #6b7280 !important;
+}
+
+/* 필터삭제 */
+.filter-delete-button:hover {
+  background-color: #b91c1c !important;
+}
+
+/* 초기화 */
+.filter-reset-button:hover {
+  background-color: #fef2f2 !important;
+}
+
+/* 클릭 순간 */
+.business-action-button:active:not(:disabled) {
+  filter: brightness(0.95);
+}
+
+/* 모달 버튼 공통 */
+.modal-action-button {
+  transition: background-color 0.15s ease;
+}
+
+/* 등록 / 수정 → 진한 파랑 */
+.modal-submit-button:hover:not(:disabled) {
+  background-color: #1d4ed8 !important;
+}
+
+/* 취소 → 필터저장과 동일한 연한 회색 */
+.modal-cancel-button:hover:not(:disabled) {
+  background-color: #d1d5db !important;
+}
+
+/* 클릭 */
+.modal-action-button:active:not(:disabled) {
+  filter: brightness(0.95);
+}
+
+.filter-save-button:hover:not(:disabled) {
+  background-color: #f5f2f2 !important;
 }

@@ -132,7 +132,7 @@ export default function BusinessForm({ masterData, reloadData, showToast }) {
           showToast("저장 실패");
         });
 
-      showToast("등록 완료");
+      showToast("사업 등록 완료");
 
       // 입력 초기화
       setFormData({

@@ -253,7 +253,7 @@ export default function BusinessList({ masterData, reloadData }) {
         : [];
     const filtered = masterData.rows.filter((row) => {
       // 조회기간 금액 없는 사업 제외
-      if (!hasPeriodAmount(row)) {
+      if (!hasPeriodAmount(row, periodMonths)) {
         return false;
       }
 
@@ -318,7 +318,6 @@ export default function BusinessList({ masterData, reloadData }) {
       map[key].metrics[row.metric] = row;
       map[key].metricList.push(row);
     });
-
 
     const filteredGrouped = grouped.filter((group) => {
       if (!usePeriodFilter || !periodFilter.start || !periodFilter.end) {
@@ -491,7 +490,10 @@ export default function BusinessList({ masterData, reloadData }) {
       border: "1px solid #10b981",
     },
   };
-
+  const periodMonths =
+    usePeriodFilter && periodFilter.start && periodFilter.end
+      ? getPeriodMonths(periodFilter.start, periodFilter.end)
+      : [];
   const totals = resultRows.reduce(
     (acc, group) => {
       const salesRow = group.metricList?.find((item) => item.metric === "매출");
@@ -574,6 +576,8 @@ export default function BusinessList({ masterData, reloadData }) {
       `🚀 ${id} | ${phase} | 실제: ${actualDuration.toFixed(2)}ms | 전체: ${baseDuration.toFixed(2)}ms`,
     );
   };
+
+  const [savingFilter, setSavingFilter] = useState(false);
 
   return (
     <Profiler id="BusinessList" onRender={handleProfiler}>
@@ -677,6 +681,7 @@ export default function BusinessList({ masterData, reloadData }) {
                 }
               />
               <button
+                className="business-action-button"
                 type="button"
                 onClick={() => handleResetPeriod()}
                 title="조회기간 초기화"
@@ -758,6 +763,7 @@ export default function BusinessList({ masterData, reloadData }) {
               >
                 검색 결과 : {resultRows.length}건
                 <button
+                  className="business-action-button business-register-button"
                   onClick={() => {
                     setEditData(null);
                     setOpenModal(true);
@@ -819,7 +825,13 @@ export default function BusinessList({ masterData, reloadData }) {
             {/* 1번째 줄 : 비교 버튼 */}
             <div>
               <button
+                className="business-action-button filter-save-button"
+                disabled={savingFilter}
                 onClick={() => {
+                  if (savingFilter) return;
+
+                  setSavingFilter(true);
+
                   setSavedFilters((prev) => [
                     ...prev,
                     {
@@ -831,31 +843,39 @@ export default function BusinessList({ masterData, reloadData }) {
                         ? { ...periodFilter }
                         : null,
                       resultCount: resultRows.length,
-                      // resultRows: resultRows,
                     },
                   ]);
 
                   showToast(`✅ 필터 ${savedFilters.length + 1} 저장됨`);
+
+                  setTimeout(() => {
+                    setSavingFilter(false);
+                  }, 1000);
                 }}
                 style={{
                   padding: "8px 18px",
                   marginRight: "8px",
                   fontSize: "11px",
-                  cursor: "pointer",
-                  background: "#fff",
-                  color: "#374151",
-                  border: "1px solid #d1d5db",
+                  cursor: savingFilter ? "not-allowed" : "pointer",
+                  background: savingFilter ? "#f3f4f6" : "#fff",
+                  color: savingFilter ? "#9ca3af" : "#374151",
+                  border: savingFilter
+                    ? "1px solid #e5e7eb"
+                    : "1px solid #d1d5db",
                   borderRadius: "6px",
                   fontWeight: "600",
+                  opacity: savingFilter ? 0.65 : 1,
+                  transition: "all 0.2s ease",
                 }}
               >
-                필터저장
+                {savingFilter ? "필터저장" : "필터저장"}
                 <span style={{ marginLeft: "4px" }}>
                   ({savedFilters.length})
                 </span>
               </button>
 
               <button
+                className="business-action-button filter-search-button"
                 onClick={() => {
                   if (savedFilters.length === 0) {
                     showToast("　저장된 필터가 없습니다❗");
@@ -883,6 +903,7 @@ export default function BusinessList({ masterData, reloadData }) {
               </button>
 
               <button
+                className="business-action-button filter-delete-button"
                 onClick={handleResetCompare}
                 style={{
                   padding: "8px 18px",
@@ -1126,6 +1147,7 @@ export default function BusinessList({ masterData, reloadData }) {
               </div>
 
               <button
+                className="business-action-button filter-delete-button"
                 onClick={async () => {
                   try {
                     setDeleting(true);
@@ -1168,6 +1190,7 @@ export default function BusinessList({ masterData, reloadData }) {
               </button>
 
               <button
+                className="business-action-button filter-save-button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleting}
                 style={{
