@@ -1,7 +1,7 @@
 import {
   BarChart,
   Bar,
-  Cell,  // 막대의 색 지정
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -10,69 +10,90 @@ import {
   ResponsiveContainer
 } from 'recharts'
 
-const CustomTooltip = ({ active, payload, label }) => { // active : 마우스 활성화, payload : 막대 데이터, label : X, Y 축
+const CustomTooltip = ({ active, payload, label }) => {
 
   if (!active || !payload || !payload.length) return null
 
-  const d = payload[0].payload  // 현재의 막대 데이터 가져오기
+  const d = payload[0].payload
 
-  // 툴팁의 화면 만들기
   return (
     <div
       style={{
-        background: "#fff",  // 배경색
-        border: "1px solid #ddd",  // 박스 테두리 두께
-        padding: "10px",  // 내용과 박스 사이 공간
+        background: "#fff",
+        border: "1px solid #ddd",
+        padding: "10px",
       }}
     >
-      <strong>{label}</strong>  {/* 항목 이름 */}
+      <strong>{label}</strong>
 
       <div>
-        2024 : {d.y2024.toLocaleString()}  {/* 2024, 1000단위 쉼표 */}
+        2024 : {d.y2024.toLocaleString()}
       </div>
 
       <div>
-        2025 : {d.y2025.toLocaleString()}  {/* 2025 */}
+        2025 : {d.y2025.toLocaleString()}
+      </div>
+
+      <div>
+        2026 : {d.y2026.toLocaleString()}
       </div>
     </div>
   )
 }
 
-export default function RenewalChart({ data }) {  // Dashboard의 renewalData를 data라는 이름으로 받음
+export default function RenewalChart({ data }) {
 
   return (
-    <div style={{ width: '100%', height: 170 }}>  {/* 그래프 영역 */}
-      <ResponsiveContainer>  {/* 반응형 */}
-        <BarChart data={data} barSize={80}>  {/* 받아온 data를 사용, 막대 너비 80 */}
+    <div style={{ width: '100%', height: 170 }}>
+      <ResponsiveContainer>
 
-          <CartesianGrid strokeDasharray="3 3" />  {/* 점선 격자 */}
+        <BarChart
+          data={data}
+          barSize={80}
+        >
+
+          <CartesianGrid strokeDasharray="3 3" />
 
           <XAxis
-            dataKey="label"  // X축(매출, 매출이익)
+            dataKey="label"
             tick={{ fontSize: 12 }}
           />
 
           <YAxis
-            tickFormatter={(value) => value.toLocaleString()}  // 천 단위 쉼표
+            tickFormatter={(value) => value.toLocaleString()}
             tick={{ fontSize: 12 }}
           />
 
-          <Tooltip content={<CustomTooltip />} />  {/* 사용자 정의 툴팁 */}
+          <Tooltip content={<CustomTooltip />} />
 
-          <Legend  // 직접 만든 범례 사용
+          <Legend
             content={() => (
-              <div style={{ display: "flex", justifyContent: "center", gap: 40, marginLeft: 50 }}>  {/* 가로로 정렬 */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 40,
+                  marginLeft: 50
+                }}
+              >
 
-                <div style={{ display: "flex", alignItems: "center" }}>  {/* 세로로 정렬 */}
+                {/* 2024 */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center"
+                  }}
+                >
                   <div
-                    style={{  // 네모칸 스타일
+                    style={{
                       width: 12,
                       height: 12,
                       background: "#808995",
                       marginRight: 6,
                     }}
                   />
-                  <span  // 범례 글씨
+
+                  <span
                     style={{
                       color: "#808995",
                       fontSize: 12,
@@ -83,7 +104,13 @@ export default function RenewalChart({ data }) {  // Dashboard의 renewalData를
                   </span>
                 </div>
 
-                <div style={{ display: "flex", alignItems: "center" }}>  {/* 동일 */}
+                {/* 2025 */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center"
+                  }}
+                >
                   <div
                     style={{
                       width: 12,
@@ -92,6 +119,7 @@ export default function RenewalChart({ data }) {  // Dashboard의 renewalData를
                       marginRight: 6,
                     }}
                   />
+
                   <span
                     style={{
                       color: "#4284F2",
@@ -103,29 +131,93 @@ export default function RenewalChart({ data }) {  // Dashboard의 renewalData를
                   </span>
                 </div>
 
+                {/* 2026 */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center"
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 12,
+                      height: 12,
+                      background: "#1D4ED8",
+                      marginRight: 6,
+                    }}
+                  />
+
+                  <span
+                    style={{
+                      color: "#1D4ED8",
+                      fontSize: 12,
+                      fontWeight: 400,
+                    }}
+                  >
+                    2026
+                  </span>
+                </div>
+
               </div>
             )}
           />
 
-          <Bar dataKey="y2024" name="2024">  {/* 2024 막대 */}
-            {data.map((entry, index) => (  // map은 색을 다르게 칠하기 위해
+          {/* 2024 */}
+          <Bar
+            dataKey="y2024"
+            name="2024"
+            barSize={60}
+          >
+            {data.map((entry, index) => (
               <Cell
                 key={index}
-                fill={entry.label === "매출" ? "#9CA3AF" : "#6B7280"}
+                fill={
+                  entry.label === "매출"
+                    ? "#9CA3AF"
+                    : "#6B7280"
+                }
               />
             ))}
           </Bar>
 
-          <Bar dataKey="y2025" name="2025">  {/* 2025 막대 */}
+          {/* 2025 */}
+          <Bar
+            dataKey="y2025"
+            name="2025"
+            barSize={60}
+          >
             {data.map((entry, index) => (
               <Cell
                 key={index}
-                fill={entry.label === "매출" ? "#60A5FA" : "#2563EB"}
+                fill={
+                  entry.label === "매출"
+                    ? "#60A5FA"
+                    : "#2563EB"
+                }
+              />
+            ))}
+          </Bar>
+
+          {/* 2026 */}
+          <Bar
+            dataKey="y2026"
+            name="2026"
+            barSize={60}
+          >
+            {data.map((entry, index) => (
+              <Cell
+                key={index}
+                fill={
+                  entry.label === "매출"
+                    ? "#197aea"
+                    : "#1D4ED8"
+                }
               />
             ))}
           </Bar>
 
         </BarChart>
+
       </ResponsiveContainer>
     </div>
   )

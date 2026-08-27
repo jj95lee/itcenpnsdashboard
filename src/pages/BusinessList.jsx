@@ -908,7 +908,7 @@ export default function BusinessList({ masterData, reloadData }) {
                 style={{
                   padding: "8px 18px",
                   fontSize: "11px",
-                  background: "#dc2626",
+                  background: "#ef4444",
                   color: "#fff",
                   border: "1px solid #ef4444",
                   borderRadius: "6px",
@@ -1076,6 +1076,11 @@ export default function BusinessList({ masterData, reloadData }) {
                                 {detailMetricColumns.map((key) => (
                                   <td
                                     key={key}
+                                    className={
+                                      key === "연간계"
+                                        ? "annual-total-cell"
+                                        : ""
+                                    }
                                     title={String(metricRow[key] ?? "")}
                                   >
                                     {metricRow[key]}
@@ -1177,7 +1182,7 @@ export default function BusinessList({ masterData, reloadData }) {
                 }}
                 disabled={deleting}
                 style={{
-                  background: deleting ? "#9ca3af" : "#dc2626",
+                  background: deleting ? "#9ca3af" : "#ef4444",
                   color: "#fff",
                   border: "none",
                   borderRadius: "8px",

@@ -1,8 +1,10 @@
+/* =========================================================
+   Dashboard
+========================================================= */
+
 .dashboard {
   min-height: 100vh;
-
   background: #f4f8ff;
-
   padding: 10px 60px;
 }
 
@@ -10,9 +12,7 @@
   background: linear-gradient(195deg, #3159e8 0%, #7f99ff 25%, #ffffff 100%);
 
   padding: 25px 50px;
-
   border-radius: 24px;
-
   margin-bottom: 30px;
 
   box-shadow: 0 15px 35px rgba(49, 89, 232, 0.18);
@@ -65,29 +65,32 @@
   font-size: 12px;
   color: #9ca3af;
 }
-/* ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ */
-/* Card */
+
+/* =========================================================
+   Card
+========================================================= */
+
 .card {
   background: rgba(255, 255, 255, 0.6);
 
   backdrop-filter: blur(12px);
-
   -webkit-backdrop-filter: blur(12px);
 
   border-radius: 22px;
-
   padding: 32px;
-
   margin-bottom: 0;
 
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.07);
 
   border: 1px solid rgba(255, 255, 255, 0.6);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .card:hover {
   transform: translateY(-2px);
-
   box-shadow: 0 20px 40px rgba(49, 89, 232, 0.12);
 }
 
@@ -118,137 +121,498 @@
   margin-top: 20px;
 }
 
-/* Table */
+/* =========================================================
+   Table
+   - 전체 테이블을 Enterprise / SaaS 스타일로 변경
+========================================================= */
+
 .table-wrapper {
   overflow-x: auto;
-  /* margin-top: -80px; */
   margin-left: 10px;
+
+  /* 스크롤바가 생겨도 레이아웃이 흔들리지 않도록 */
+  scrollbar-width: thin;
 }
+
+/* ---------------------------------------------------------
+   기본 테이블
+--------------------------------------------------------- */
 
 .data-table {
-  border-collapse: collapse;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+
   font-size: 14px;
   table-layout: fixed;
+
+  color: #334155;
+
+  /* 표 전체 외곽선 */
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+
+  background: #ffffff;
 }
+
+/* ---------------------------------------------------------
+   Header
+--------------------------------------------------------- */
 
 .data-table thead th {
-  background: #f8f9fb;
-  color: #374151;
+  background: #f8fafc;
+
+  color: #475569;
+
   font-weight: 600;
   font-size: 13px;
-  padding: 12px 30px;
+
+  padding: 13px 18px;
+
   text-align: center;
-  border-bottom: 2px solid #e5e7eb;
+
   white-space: nowrap;
-  border-top: 1px solid #e5e7eb;
-  border-left: 1px solid #e5e7eb;
-  border-right: 1px solid #e5e7eb;
+
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+
+  height: 44px;
+  border-right: 1px solid #eff4f9;
 }
 
-.data-table tbody td {
-  padding: 10px 25px;
-  border-bottom: 1px solid #f0f0f0;
-  color: #374151;
-  border-right: 1px solid #e5e7eb;
-  border-left: 1px solid #e5e7eb;
-  text-align: center;
+/* 첫 번째 헤더의 왼쪽 모서리 */
+
+.data-table thead th:first-child {
+  border-top-left-radius: 10px;
 }
+
+/* 마지막 헤더의 오른쪽 모서리 */
+
+.data-table thead th:last-child {
+  border-top-right-radius: 10px;
+}
+
+/* ---------------------------------------------------------
+   Body
+--------------------------------------------------------- */
+
+.data-table tbody td {
+  padding: 11px 18px;
+
+  color: #475569;
+
+  background: #ffffff;
+
+  border: none;
+  border-bottom: 1px solid #eef2f7;
+
+  text-align: center;
+
+  vertical-align: middle;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+    border-right: 1px solid #eff4f9;
+}
+
+/* 마지막 행 */
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---------------------------------------------------------
+   Row Hover
+--------------------------------------------------------- */
+
+.data-table tbody tr:hover td {
+  background: #f7faff;
+}
+
+/* ---------------------------------------------------------
+   Footer
+--------------------------------------------------------- */
 
 .data-table tfoot td {
   padding: 10px 16px;
+
   background: #fafbfc;
-  border-top: 2px solid #e5e7eb;
-  border-right: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
-  border-left: 1px solid #e5e7eb;
+
+  color: #94a3b8;
+
+  font-size: 12px;
+
+  border: none;
+  border-top: 1px solid #e2e8f0;
 }
+
+/* =========================================================
+   Column
+========================================================= */
 
 .data-table th:first-child,
 .data-table td:first-child {
   width: 0%;
 }
 
+/* 첫 번째 컬럼 */
+
 .data-table tbody td:first-child {
   text-align: center !important;
 }
 
-.data-table tbody tr:hover {
-  background: #fafbfc;
-}
-
-.data-table tbody tr:last-child td {
-  border-bottom: none;
-}
+/* 구분 */
 
 .col-label {
-  width: 90px; /* 폭 고정 */
+  width: 90px;
+
   text-align: left !important;
-  padding-left: 22px !important; /* 왼쪽 여백 통일 */
+
+  padding-left: 22px !important;
+
   font-weight: 500;
-  color: #1f2937;
+
+  color: #334155;
+
   vertical-align: middle;
 }
+
+/* 제품 / 고객사 */
 
 .col-product,
 .col-customer {
   text-align: left !important;
+
   font-weight: 600;
-  color: #1e40af;
-  background: #f8faff;
+
+  color: #3159c9;
+
+  background: #f7f9ff;
+
   vertical-align: middle;
-  border-right: 1px solid #e8edf5;
+
+  border-right: 1px solid #edf2ff;
 }
+
+/* 제품 / 고객사 hover */
+
+.data-table tbody tr:hover .col-product,
+.data-table tbody tr:hover .col-customer {
+  background: #f0f5ff;
+}
+
+/* 숫자 */
 
 .col-number {
   text-align: right !important;
+
   font-variant-numeric: tabular-nums;
+
   font-family: "Segoe UI", system-ui, sans-serif;
+
   font-weight: 400;
+
+  color: #334155;
 }
+
+/* 그룹 */
 
 .col-group {
-  background: #eef2ff !important;
+  background: #f5f7ff !important;
+
   color: #3730a3 !important;
-  border-left: 1px solid #e0e7ff;
+
+  border-left: none;
 }
 
+/* =========================================================
+   증감
+========================================================= */
+
 .data-table .positive {
-  color: red !important;
-  /* font-weight: bold; */
+  color: #dc2626 !important;
 }
 
 .data-table .negative {
-  color: blue !important;
-  /* font-weight: bold; */
+  color: #2563eb !important;
 }
+
+/* =========================================================
+   단위
+========================================================= */
 
 .table-unit {
   text-align: right !important;
+
   font-size: 12px;
-  color: #9ca3af;
+
+  color: #94a3b8;
 }
+
+/* =========================================================
+   그룹 시작
+========================================================= */
 
 .product-group-start td,
 .customer-group-start td {
-  border-top: 2px solid #e5e7eb;
+  border-top: 1px solid #dbe3ef;
 }
+
+/* 첫 번째 그룹은 위쪽 선 제거 */
 
 .product-table .product-group-start:first-child td {
   border-top: none;
 }
 
+/* Summary */
+
 .summary-row td {
-  background: #f9fafb;
+  background: #f8fafc;
+
   font-size: 13px;
 }
 
+/* =========================================================
+   Customer Table
+========================================================= */
+
 .customer-table thead tr:last-child th {
-  /* font-size: 12px; */
-  /* font-weight: 700; */
-  /* color: #6b7280; */
-  background: #f3f4f6;
-  padding: 8px 16px;
+  background: #f8fafc;
+
+  padding: 11px 16px;
 }
+
+/* =========================================================
+   Overall
+========================================================= */
+
+.overall-table .data-table {
+  width: 100%;
+}
+
+.overall-table .data-table th:first-child,
+.overall-table .data-table td:first-child {
+  width: 90px;
+}
+
+.overall-table .data-table tbody td {
+  padding: 8px 11px;
+}
+
+.overall-table {
+  flex: 1;
+}
+
+.overall-chart {
+  flex: 1;
+  margin-top: 0;
+}
+
+.overall-layout .card__header {
+  padding-bottom: 0;
+}
+
+/* =========================================================
+   제품별 판매 추이
+========================================================= */
+
+.product-table .data-table {
+  width: 100%;
+}
+
+.product-table .data-table th:first-child,
+.product-table .data-table td:first-child {
+  width: 90px;
+}
+
+.product-table .data-table tbody td {
+  padding: 8px 15px;
+}
+
+.product-table .data-table th {
+  padding: 12px 15px;
+}
+
+.product-table {
+  flex: 1;
+}
+
+.product-chart {
+  flex: 1;
+  margin-top: 0;
+}
+
+/* =========================================================
+   갱신형
+========================================================= */
+
+.renewal-table .data-table {
+  width: 100%;
+}
+
+.renewal-table .data-table th:first-child,
+.renewal-table .data-table td:first-child {
+  width: 90px;
+}
+
+.renewal-table .data-table tbody td {
+  padding: 8px 15px;
+}
+
+.renewal-table {
+  flex: 1;
+}
+
+.renewal-chart {
+  flex: 1;
+  margin-top: 0;
+}
+
+/* =========================================================
+   조달판매
+========================================================= */
+
+.procurement-table .data-table {
+  width: 100%;
+}
+
+.procurement-table .data-table th:first-child,
+.procurement-table .data-table td:first-child {
+  width: 90px;
+}
+
+.procurement-table .data-table tbody td {
+  padding: 8px 15px;
+}
+
+.procurement-table {
+  flex: 1;
+}
+
+.procurement-chart {
+  flex: 1;
+  margin-top: 0;
+}
+
+/* =========================================================
+   고객사
+========================================================= */
+
+.customer-table .data-table {
+  width: 100%;
+}
+
+.customer-table .data-table th:first-child,
+.customer-table .data-table td:first-child {
+  width: 90px;
+}
+
+.customer-table .data-table tbody td {
+  padding: 8px 15px;
+}
+
+.customer-table {
+  flex: 1;
+}
+
+.customer-chart {
+  flex: 1;
+  margin-top: 0;
+}
+
+/* =========================================================
+   Header 정렬
+========================================================= */
+
+.data-table thead .col-label,
+.data-table thead .col-product {
+  text-align: center !important;
+}
+
+/* =========================================================
+   Layout
+========================================================= */
+
+.overall-layout,
+.product-layout,
+.renewal-layout,
+.procurement-layout,
+.customer-layout {
+  display: flex;
+
+  gap: 20px;
+
+  align-items: stretch;
+}
+
+/* =========================================================
+   Toast
+========================================================= */
+
+.toast {
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  background: #1f4e79;
+
+  color: white;
+
+  padding: 12px 20px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+
+  z-index: 9999;
+
+  animation: toastFade 0.3s ease;
+}
+
+@keyframes toastFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* =========================================================
+   Business Modal
+========================================================= */
+
+.business-modal {
+  width: 900px;
+
+  max-height: 85vh;
+
+  overflow-y: auto;
+
+  background: rgba(255, 255, 255, 0.97);
+
+  border-radius: 18px;
+
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+
+  padding: 30px;
+}
+
+/* =========================================================
+   Responsive
+========================================================= */
 
 @media (max-width: 900px) {
   .dashboard__grid {
@@ -273,206 +637,4 @@
   .data-table tbody td {
     padding: 10px 12px;
   }
-}
-
-/* 전체 카드 테이블 */
-.overall-table .data-table {
-  width: 100%;
-}
-
-.overall-table .data-table th:first-child,
-.overall-table .data-table td:first-child {
-  width: 90px;
-}
-
-.overall-table .data-table tbody td {
-  padding: 8px 11px;
-}
-
-.overall-table {
-  flex: 1;
-}
-
-.overall-chart {
-  flex: 1;
-  margin-top: 0px;
-}
-
-.overall-layout .card__header {
-  padding-bottom: 0px;
-}
-
-/* 제품별 판매 추이 */
-.product-table .data-table {
-  width: 100%;
-}
-
-.product-table .data-table th:first-child,
-.product-table .data-table td:first-child {
-  width: 90px;
-}
-
-.product-table .data-table tbody td {
-  padding: 8px 15px;
-}
-
-.product-table .data-table th {
-  padding: 12px 15px;
-}
-
-.product-table {
-  flex: 1;
-}
-
-.product-chart {
-  flex: 1;
-  margin-top: 0px;
-}
-
-/* 갱신형 */
-.renewal-table .data-table {
-  width: 100%;
-}
-
-.renewal-table .data-table th:first-child,
-.renewal-table .data-table td:first-child {
-  width: 90px;
-}
-
-.renewal-table .data-table tbody td {
-  padding: 8px 15px;
-}
-
-.renewal-table {
-  flex: 1;
-}
-
-.renewal-chart {
-  flex: 1;
-  margin-top: 0px;
-}
-
-/* 조달판매 */
-.procurement-table .data-table {
-  width: 100%;
-}
-
-.procurement-table .data-table th:first-child,
-.procurement-table .data-table td:first-child {
-  width: 90px;
-}
-
-.procurement-table .data-table tbody td {
-  padding: 8px 15px;
-}
-
-.procurement-table {
-  flex: 1;
-}
-
-.procurement-chart {
-  flex: 1;
-  margin-top: 0px;
-}
-
-/* 고객사 */
-.customer-table .data-table {
-  width: 100%;
-}
-
-.customer-table .data-table th:first-child,
-.customer-table .data-table td:first-child {
-  width: 90px;
-}
-
-.customer-table .data-table tbody td {
-  padding: 8px 15px;
-}
-
-.customer-table {
-  flex: 1;
-}
-
-.customer-chart {
-  flex: 1;
-  margin-top: 0px;
-}
-
-.data-table thead .col-label,
-.data-table thead .col-product {
-  text-align: center !important;
-}
-
-.overall-layout,
-.product-layout,
-.renewal-layout,
-.procurement-layout,
-.customer-layout {
-  display: flex;
-  gap: 20px;
-  align-items: stretch;
-}
-
-.toast {
-  position: fixed;
-
-  top: 50%;
-  left: 50%;
-
-  transform: translate(-50%, -50%);
-
-  background: #1f4e79;
-  color: white;
-
-  padding: 12px 24px;
-  border-radius: 8px;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-
-  z-index: 9999;
-
-  animation: toastFade 0.3s ease;
-
-  background: #1f4e79;
-  color: white;
-
-  padding: 12px 20px;
-  border-radius: 8px;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-
-  z-index: 9999;
-
-  animation: toastFade 0.3s ease;
-}
-@keyframes toastFade {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -60%);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
-}
-
-.business-modal {
-  width: 900px;
-  max-height: 85vh;
-  overflow-y: auto;
-
-  background: rgba(255,255,255,0.95);
-  border-radius: 18px;
-
-  box-shadow:
-    0 20px 50px rgba(0,0,0,0.15);
-
-  padding: 30px;
 }

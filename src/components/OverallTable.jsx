@@ -9,9 +9,9 @@ export default function OverallTable({ rows = [], unit = "백만원" }) {
             <th className="col-label">구분</th>
             <th>2024</th>
             <th>2025</th>
-            <th>2026</th>
-            <th>2025 YoY(%)</th>
-            <th>2026 YoY(%)</th>
+            <th>2026 (진행 중)</th>
+            <th>2025 YoY</th>
+            <th>2026 YoY (진행 중)</th>
           </tr>
         </thead>
 

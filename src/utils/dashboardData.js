@@ -26,7 +26,7 @@ export function makeOverallData(rows) {
       if (year === "2026") profit2026 += total;
     }
   });
-  
+
   return [
     {
       label: "매출",
@@ -80,19 +80,23 @@ export function makeProductData(rows) {
       result[product] = {
         sales2024: 0,
         sales2025: 0,
+        sales2026: 0,
         profit2024: 0,
         profit2025: 0,
+        profit2026: 0,
       };
     }
 
     if (metric === "매출") {
       if (year === "2024") result[product].sales2024 += total;
       if (year === "2025") result[product].sales2025 += total;
+      if (year === "2026") result[product].sales2026 += total;
     }
 
     if (metric === "매출이익") {
       if (year === "2024") result[product].profit2024 += total;
       if (year === "2025") result[product].profit2025 += total;
+      if (year === "2026") result[product].profit2026 += total;
     }
   });
 
@@ -103,11 +107,13 @@ export function makeProductData(rows) {
         label: "매출",
         y2024: value.sales2024,
         y2025: value.sales2025,
+        y2026: value.sales2026,
       },
       {
         label: "매출이익",
         y2024: value.profit2024,
         y2025: value.profit2025,
+        y2026: value.profit2026,
       },
     ],
   }));
@@ -118,9 +124,11 @@ export function makeProductData(rows) {
 export function makeRenewalData(rows) {
   let sales2024 = 0;
   let sales2025 = 0;
+  let sales2026 = 0;
 
   let profit2024 = 0;
   let profit2025 = 0;
+  let profit2026 = 0;
 
   rows.forEach((row) => {
     // 사업명에 "갱신"이 없으면 제외
@@ -133,11 +141,13 @@ export function makeRenewalData(rows) {
     if (metric === "매출") {
       if (year === "2024") sales2024 += total;
       if (year === "2025") sales2025 += total;
+      if (year === "2026") sales2026 += total;
     }
 
     if (metric === "매출이익") {
       if (year === "2024") profit2024 += total;
       if (year === "2025") profit2025 += total;
+      if (year === "2026") profit2026 += total;
     }
   });
 
@@ -146,11 +156,13 @@ export function makeRenewalData(rows) {
       label: "매출",
       y2024: sales2024,
       y2025: sales2025,
+      y2026: sales2026,
     },
     {
       label: "매출이익",
       y2024: profit2024,
       y2025: profit2025,
+      y2026: profit2026,
     },
   ];
 }
@@ -160,12 +172,14 @@ export function makeRenewalData(rows) {
 export function makeProcurementData(rows) {
   let sales2024 = 0;
   let sales2025 = 0;
+  let sales2026 = 0;
 
   let profit2024 = 0;
   let profit2025 = 0;
+  let profit2026 = 0;
 
   rows.forEach((row) => {
-    // 매출처에 "조달"이라는 단어가 포함된 데이터만
+    // 사업명에 "조달"이라는 단어가 포함된 데이터만
     if (!String(row["사업명"] || "").includes("조달")) return;
 
     const year = String(row["연도"]);
@@ -175,11 +189,13 @@ export function makeProcurementData(rows) {
     if (metric === "매출") {
       if (year === "2024") sales2024 += total;
       if (year === "2025") sales2025 += total;
+      if (year === "2026") sales2026 += total;
     }
 
     if (metric === "매출이익") {
       if (year === "2024") profit2024 += total;
       if (year === "2025") profit2025 += total;
+      if (year === "2026") profit2026 += total;
     }
   });
 
@@ -188,11 +204,13 @@ export function makeProcurementData(rows) {
       label: "매출",
       y2024: sales2024,
       y2025: sales2025,
+      y2026: sales2026,
     },
     {
       label: "매출이익",
       y2024: profit2024,
       y2025: profit2025,
+      y2026: profit2026,
     },
   ];
 }
@@ -218,6 +236,7 @@ export function makeCustomerData(rows) {
 
     // 공공 숨기기
     // if (customer === "공공") return;
+
     const year = String(row["연도"]);
     const metric = row["metric"];
     const total = Number(row["연간계"] || 0);
@@ -226,19 +245,23 @@ export function makeCustomerData(rows) {
       result[customer] = {
         sales2024: 0,
         sales2025: 0,
+        sales2026: 0,
         profit2024: 0,
         profit2025: 0,
+        profit2026: 0,
       };
     }
 
     if (metric === "매출") {
       if (year === "2024") result[customer].sales2024 += total;
       if (year === "2025") result[customer].sales2025 += total;
+      if (year === "2026") result[customer].sales2026 += total;
     }
 
     if (metric === "매출이익") {
       if (year === "2024") result[customer].profit2024 += total;
       if (year === "2025") result[customer].profit2025 += total;
+      if (year === "2026") result[customer].profit2026 += total;
     }
   });
 
@@ -249,11 +272,13 @@ export function makeCustomerData(rows) {
         label: "매출",
         y2024: value.sales2024,
         y2025: value.sales2025,
+        y2026: value.sales2026,
       },
       {
         label: "매출이익",
         y2024: value.profit2024,
         y2025: value.profit2025,
+        y2026: value.profit2026,
       },
     ],
   }));

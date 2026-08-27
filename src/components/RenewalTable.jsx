@@ -1,28 +1,33 @@
-import { calcChange, calcYoy, formatNumber, formatYoy } from '../utils/formatters'  // 증감, 증감률, 소수점 표시
+import { calcYoy, formatNumber, formatYoy } from '../utils/formatters'
 
 export default function RenewalTable({ rows, unit = '백만원' }) {
   return (
     <div className="table-wrapper">
-      <table className="data-table">  {/* 표 내용 시작 */}
+      <table className="data-table">
 
-        <thead>  {/* 표 머리글 */}
+        <thead>
           <tr>
             <th className="col-label">구분</th>
             <th>2024</th>
             <th>2025</th>
-            <th>증감</th>
-            <th>YOY(%)</th>
+            <th>2026 (진행 중)</th>
+            <th>2025 YoY</th>
+            <th>2026 YoY (진행 중)</th>
           </tr>
         </thead>
 
-        <tbody>  {/* 실제 데이터 들어가는 곳 */}
-          {rows.map((row) => {  // 반복문
+        <tbody>
+          {rows.map((row) => {
 
-            const change = calcChange(row.y2024, row.y2025)
-            const yoy = calcYoy(row.y2024, row.y2025)
+            // 2025 YoY = (2025 - 2024) / 2024
+            const yoy2025 = calcYoy(row.y2024, row.y2025)
+
+            // 2026 YoY = (2026 - 2025) / 2025
+            const yoy2026 = calcYoy(row.y2025, row.y2026)
 
             return (
-              <tr key={row.label}>  {/* 각 행을 구분 */}
+              <tr key={row.label}>
+
                 <td className="col-label">
                   {row.label}
                 </td>
@@ -35,25 +40,32 @@ export default function RenewalTable({ rows, unit = '백만원' }) {
                   {formatNumber(row.y2025)}
                 </td>
 
-                <td
-                  className={`col-number ${
-                    change > 0 ? 'positive' :
-                    change < 0 ? 'negative' :
-                    ''
-                  }`}  // 증감에 따라 폰트 색 변화
-                >
-                  {change > 0 ? '+' : ''}
-                  {formatNumber(change)}
+                <td className="col-number">
+                  {formatNumber(row.y2026)}
                 </td>
 
                 <td
                   className={`col-number ${
-                    yoy > 0 ? 'positive' :
-                    yoy < 0 ? 'negative' :
-                    ''
+                    yoy2025 > 0
+                      ? 'positive'
+                      : yoy2025 < 0
+                        ? 'negative'
+                        : ''
                   }`}
                 >
-                  {formatYoy(yoy)}  {/* 소수점 + % */}
+                  {formatYoy(yoy2025)}
+                </td>
+
+                <td
+                  className={`col-number ${
+                    yoy2026 > 0
+                      ? 'positive'
+                      : yoy2026 < 0
+                        ? 'negative'
+                        : ''
+                  }`}
+                >
+                  {formatYoy(yoy2026)}
                 </td>
 
               </tr>
@@ -64,7 +76,7 @@ export default function RenewalTable({ rows, unit = '백만원' }) {
         <tfoot>
           <tr>
             <td
-              colSpan={5}
+              colSpan={6}
               className="table-unit"
             >
               단위: {unit}

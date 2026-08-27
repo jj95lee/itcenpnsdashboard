@@ -9,85 +9,107 @@ import {
   ResponsiveContainer,
 } from "recharts"
 
-const CustomTooltip = ({ active, payload, label }) => { // active : 마우스 활성화, payload : 막대 데이터, label : X, Y 축
+const CustomTooltip = ({ active, payload, label }) => {
 
   if (!active || !payload || !payload.length) return null
 
-  const d = payload[0].payload  // 현재의 막대 데이터 가져오기
+  const d = payload[0].payload
 
-  // 툴팁의 화면 만들기
   return (
     <div
       style={{
-        background: "#fff",  // 배경색
-        border: "1px solid #ddd",  // 박스 테두리 두께
-        padding: "10px",  // 내용과 박스 사이 공간
+        background: "#fff",
+        border: "1px solid #ddd",
+        padding: "10px",
       }}
     >
-      <strong>{label}</strong>  {/* 제품 이름 */}
+      <strong>{label}</strong>
 
-      <div>2024 매출 : {d.sales2024.toLocaleString()}</div>  {/* 2024 매출 */}
-      <div>2024 매출이익 : {d.profit2024.toLocaleString()}</div>  {/* 2024 매출이익 */}
-      <div>2024 매출원가 : {d.cost2024.toLocaleString()}</div>  {/* 2024 매출원가 */}
+      <div>2024 매출 : {d.sales2024.toLocaleString()}</div>
+      <div>2024 매출이익 : {d.profit2024.toLocaleString()}</div>
+      <div>2024 매출원가 : {d.cost2024.toLocaleString()}</div>
 
-      <hr />  {/* 가로선 */}
+      <hr />
 
-      <div>2025 매출 : {d.sales2025.toLocaleString()}</div>  {/* 2025 매출 */}
-      <div>2025 매출이익 : {d.profit2025.toLocaleString()}</div>  {/* 2025 매출이익 */}
-      <div>2025 매출원가 : {d.cost2025.toLocaleString()}</div>  {/* 2025 매출원가 */}
+      <div>2025 매출 : {d.sales2025.toLocaleString()}</div>
+      <div>2025 매출이익 : {d.profit2025.toLocaleString()}</div>
+      <div>2025 매출원가 : {d.cost2025.toLocaleString()}</div>
+
+      <hr />
+
+      <div>2026 매출 : {d.sales2026.toLocaleString()}</div>
+      <div>2026 매출이익 : {d.profit2026.toLocaleString()}</div>
+      <div>2026 매출원가 : {d.cost2026.toLocaleString()}</div>
     </div>
   )
 }
 
-export default function ProductChart({ data }) {  // Dashboard의 productData를 data라는 이름으로 받음
+export default function ProductChart({ data }) {
 
-  // 매출 데이터만 추출
+  // 제품별 그래프 데이터 생성
   const chartData = data.map(product => {
 
-    const sales = product.rows.find(r => r.label === "매출")  // 매출 데이터 찾기
-    const profit = product.rows.find(r => r.label === "매출이익")  // 매출이익 데이터 찾기
+    const sales = product.rows.find(r => r.label === "매출")
+    const profit = product.rows.find(r => r.label === "매출이익")
 
-    const sales2024 = sales?.y2024 ?? 0  // 데이터가 있으면 y2024, 없으면 0
-    const sales2025 = sales?.y2025 ?? 0
-
+    // 2024
+    const sales2024 = sales?.y2024 ?? 0
     const profit2024 = profit?.y2024 ?? 0
+
+    // 2025
+    const sales2025 = sales?.y2025 ?? 0
     const profit2025 = profit?.y2025 ?? 0
 
-    return {  // 그래프에서 사용할 데이터 생성
+    // 2026
+    const sales2026 = sales?.y2026 ?? 0
+    const profit2026 = profit?.y2026 ?? 0
+
+    return {
 
       product: product.product,
 
+      // 2024
       sales2024,
       profit2024,
-      cost2024: sales2024 - profit2024,  // 매출원가 계산
+      cost2024: sales2024 - profit2024,
 
+      // 2025
       sales2025,
       profit2025,
       cost2025: sales2025 - profit2025,
+
+      // 2026
+      sales2026,
+      profit2026,
+      cost2026: sales2026 - profit2026,
     }
   })
 
   return (
-    <div style={{ width: "100%", height: 480 }}>  {/* 그래프 영역 */}
-      <ResponsiveContainer>  {/* 반응형 */}
-        <BarChart data={chartData} barGap={5}>  {/* 가공한 데이터 사용 */}
+    <div style={{ width: "100%", height: 480 }}>
+      <ResponsiveContainer>
 
-          <CartesianGrid strokeDasharray="3 3" />  {/* 점선 격자 */}
+        <BarChart
+          data={chartData}
+          barGap={5}
+        >
+
+          <CartesianGrid strokeDasharray="3 3" />
 
           <XAxis
-            dataKey="product"  // X축(제품명)
+            dataKey="product"
             tick={{ fontSize: 12 }}
           />
 
           <YAxis
-            tickFormatter={(value) => value.toLocaleString()}  // 천 단위 쉼표
+            tickFormatter={(value) => value.toLocaleString()}
             tick={{ fontSize: 12 }}
           />
 
-          <Tooltip content={<CustomTooltip />} />  {/* 사용자 정의 툴팁 */}
+          <Tooltip content={<CustomTooltip />} />
 
           <Legend
-            formatter={(value) => (  // 범례 간격 조정
+            formatter={(value) => (
               <span style={{ marginRight: 20 }}>
                 {value}
               </span>
@@ -96,39 +118,60 @@ export default function ProductChart({ data }) {  // Dashboard의 productData를
             wrapperStyle={{
               fontSize: 12,
               fontWeight: 400,
-              transform: "translateX(42px)",  // 범례 위치 조정
+              transform: "translateX(42px)",
             }}
           />
+
+          {/* ================= 2024 ================= */}
 
           <Bar
             dataKey="profit2024"
             stackId="2024"
             fill="#6B7280"
             name="2024 매출이익"
-          />  {/* 2024 매출이익 */}
+          />
 
           <Bar
             dataKey="cost2024"
             stackId="2024"
             fill="#9CA3AF"
             name="2024 매출"
-          />  {/* 2024 매출원가 */}
+          />
+
+          {/* ================= 2025 ================= */}
 
           <Bar
             dataKey="profit2025"
             stackId="2025"
             fill="#2563EB"
             name="2025 매출이익"
-          />  {/* 2025 매출이익 */}
+          />
 
           <Bar
             dataKey="cost2025"
             stackId="2025"
             fill="#60A5FA"
             name="2025 매출"
-          />  {/* 2025 매출원가 */}
+          />
+
+          {/* ================= 2026 ================= */}
+
+          <Bar
+            dataKey="profit2026"
+            stackId="2026"
+            fill="#1D4ED8"
+            name="2026 매출이익"
+          />
+
+          <Bar
+            dataKey="cost2026"
+            stackId="2026"
+            fill="#197aea"
+            name="2026 매출"
+          />
 
         </BarChart>
+
       </ResponsiveContainer>
     </div>
   )

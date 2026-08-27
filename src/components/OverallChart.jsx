@@ -122,14 +122,14 @@ export default function OverallChart({ data }) {
                     style={{
                       width: 12,
                       height: 12,
-                      background: "#16A34A",
+                      background: "#1D4ED8",
                       marginRight: 6,
                     }}
                   />
 
                   <span
                     style={{
-                      color: "#16A34A",
+                      color: "#1D4ED8",
                       fontSize: 12,
                       fontWeight: 400,
                     }}
@@ -189,8 +189,8 @@ export default function OverallChart({ data }) {
                 key={index}
                 fill={
                   entry.label === "매출"
-                    ? "#4ADE80"
-                    : "#16A34A"
+                    ? "#197aea"
+                    : "#1D4ED8"
                 }
               />
             ))}

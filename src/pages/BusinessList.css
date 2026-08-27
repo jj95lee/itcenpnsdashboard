@@ -1,190 +1,372 @@
+/* ========================================================= 사업 목록 테이블 ========================================================= */
 .business-table {
   width: 100%;
   table-layout: fixed;
-  border-collapse: collapse;
+
+  border-collapse: separate;
+  border-spacing: 0;
+
+  background: #ffffff;
+
+  /* 둥근 외곽 테두리 */
+  border: 1px solid #aeb2b5;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
+/* 공통 */
 .business-table th,
 .business-table td {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: 13px; /* 기존 진한 검정선 완화 */
+  border: 1px solid #e5e9ef;
+  border-right-color: #aeb2b5;
 }
 
-/* No */
-.business-table th:nth-child(1),
-.business-table td:nth-child(1) {
-  width: 29.2px;
-  text-align: center;
-}
-
-/* 연도 */
-.business-table th:nth-child(2),
-.business-table td:nth-child(2) {
-  width: 32px;
-}
-
-/* new */
-.business-table th:nth-child(3),
-.business-table td:nth-child(3) {
-  width: 48px;
-}
-
-/* 매출유형 */
-.business-table th:nth-child(4),
-.business-table td:nth-child(4) {
-  width: 45px;
-}
-
-/* 구분 */
-.business-table th:nth-child(5),
-.business-table td:nth-child(5) {
-  width: 48px;
-}
-
-/* 고객유형 */
-.business-table th:nth-child(6),
-.business-table td:nth-child(6) {
-  width: 42px;
-}
-
-/* 매출처 */
-.business-table th:nth-child(7),
-.business-table td:nth-child(7) {
-  width: 63px;
-}
-
-/* 최종고객 */
-.business-table th:nth-child(8),
-.business-table td:nth-child(8) {
-  width: 69px;
-}
-
-/* 담당자 */
-.business-table th:nth-child(9),
-.business-table td:nth-child(9) {
-  width: 37px;
-}
-
-/* 확도 */
-.business-table th:nth-child(10),
-.business-table td:nth-child(10) {
-  width: 53px;
-}
-
-
-/* 프로젝트 코드 */
-.business-table th:nth-child(11),
-.business-table td:nth-child(11) {
-  width: 60px;
-}
-
-/* 사업명 */
-.business-table th:nth-child(12),
-.business-table td:nth-child(12) {
-  width: 180px;
-}
-
-/* 상세매출 */
-.business-table th:nth-child(13),
-.business-table td:nth-child(13) {
-  width: 35px;
-}
-
-/* 수정/삭제 */
 .business-table th:last-child,
 .business-table td:last-child {
-  width: 70px;
+  border-right: none;
 }
 
+/* 헤더 */
+.business-table th {
+  height: 42px;
+  padding: 0 8px;
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 1000;
+  text-align: center;
+
+  border-right-color: #aeb2b5;
+  border-bottom-color: #aeb2b5;
+}
+
+/* 데이터 */
+.business-table td {
+  height: 35px;
+  padding: 0 8px;
+  color: #334155; /* background 지정하지 않음. 기존 RGB / 조건부 셀 색상을 그대로 유지. */
+}
+
+/* Hover */
+.business-table tbody tr:hover td {
+  filter: brightness(0.98);
+}
+
+/* ========================================================= ★ 컬럼 Width - 기존 값 그대로 고정 ========================================================= */ /* No */
+.business-table th:nth-child(1),
+.business-table td:nth-child(1) {
+  width: 29.2px !important;
+  min-width: 29.2px;
+  max-width: 29.2px;
+  text-align: center;
+} /* 연도 */
+.business-table th:nth-child(2),
+.business-table td:nth-child(2) {
+  width: 32px !important;
+  min-width: 32px;
+  max-width: 32px;
+  text-align: center;
+} /* New / Sold */
+.business-table th:nth-child(3),
+.business-table td:nth-child(3) {
+  width: 48px !important;
+  min-width: 48px;
+  max-width: 48px;
+  text-align: center;
+} /* 매출유형 */
+.business-table th:nth-child(4),
+.business-table td:nth-child(4) {
+  width: 45px !important;
+  min-width: 45px;
+  max-width: 45px;
+  text-align: center;
+} /* 구분 */
+.business-table th:nth-child(5),
+.business-table td:nth-child(5) {
+  width: 48px !important;
+  min-width: 48px;
+  max-width: 48px;
+  text-align: center;
+} /* 고객유형 */
+.business-table th:nth-child(6),
+.business-table td:nth-child(6) {
+  width: 42px !important;
+  min-width: 42px;
+  max-width: 42px;
+  text-align: center;
+} /* 매출처 */
+.business-table th:nth-child(7),
+.business-table td:nth-child(7) {
+  width: 63px !important;
+  min-width: 63px;
+  max-width: 63px;
+} /* 최종고객 */
+.business-table th:nth-child(8),
+.business-table td:nth-child(8) {
+  width: 69px !important;
+  min-width: 69px;
+  max-width: 69px;
+} /* 담당자 */
+.business-table th:nth-child(9),
+.business-table td:nth-child(9) {
+  width: 37px !important;
+  min-width: 37px;
+  max-width: 37px;
+  text-align: center;
+} /* 확도 */
+.business-table th:nth-child(10),
+.business-table td:nth-child(10) {
+  width: 53px !important;
+  min-width: 53px;
+  max-width: 53px;
+  text-align: center;
+} /* 프로젝트 코드 */
+.business-table th:nth-child(11),
+.business-table td:nth-child(11) {
+  width: 60px !important;
+  min-width: 60px;
+  max-width: 60px;
+} /* 사업명 */
+.business-table th:nth-child(12),
+.business-table td:nth-child(12) {
+  width: 180px !important;
+  min-width: 180px;
+  max-width: 180px;
+} /* 상세매출 */
+.business-table th:nth-child(13),
+.business-table td:nth-child(13) {
+  width: 35px !important;
+  min-width: 35px;
+  max-width: 35px;
+  text-align: center;
+} /* 수정 / 삭제 */
+.business-table th:last-child,
+.business-table td:last-child {
+  width: 70px !important;
+  min-width: 70px;
+  max-width: 70px;
+  text-align: center;
+} /* ========================================================= 텍스트 강조 ========================================================= */
+.business-table td:nth-child(2) {
+  font-weight: 600;
+}
+.business-table td:nth-child(3) {
+  font-weight: 600;
+}
+.business-table td:nth-child(10) {
+  font-weight: 600;
+}
+.business-table td:nth-child(11) {
+  color: #64748b;
+}
+.business-table td:nth-child(12) {
+  color: #1e293b;
+  font-weight: 500;
+} /* ========================================================= 수정 / 삭제 버튼 ========================================================= */
+.business-table td:last-child button {
+  border: 1px solid #d1d7df;
+  background: #ffffff;
+  padding: 3px 7px;
+  border-radius: 4px;
+  color: #64748b;
+  font-size: 11px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+.business-table td:last-child button:hover {
+  background: #f8fafc;
+  border-color: #aeb8c5;
+  color: #1e40af;
+}
+.business-table td:last-child button:last-child:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+} /* ========================================================= Metric Detail Table ========================================================= */
 .metric-detail-table {
   table-layout: fixed;
-  width: 100%;
-  border-collapse: collapse;
+  width: calc(100% - 20px);
+  margin: 8px 10px 10px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+
+  /* 둥근 외곽 테두리 */
+  border: 1px solid #878a8c;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
 }
 
+/* 공통 */
 .metric-detail-table th,
 .metric-detail-table td {
   text-align: center;
   white-space: nowrap;
+
+  /* 가로선 */
+  border-bottom: 1px solid #d8e9f3;
 }
 
-.business-table {
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
-  background: #ffffff;   /* 추가 */
+/* 연간계 오른쪽 경계선 */
+.metric-detail-table .annual-total-cell {
+  border-right: none;
+  box-shadow: inset -1px 0 0 #878a8c;
 }
 
+/* 헤더의 연간계 오른쪽 경계선 */
+.metric-detail-table th:nth-last-child(2) {
+  border-right: none;
+  box-shadow: inset -1px 0 0 #878a8c;
+}
+
+/* 헤더 */
+.metric-detail-table th {
+  height: 42px;
+  background: #e9f6ff;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* 데이터 */
+.metric-detail-table td {
+  height: 42px;
+  color: #334155;
+  font-size: 13px;
+}
+
+/* 마지막 행 */
+.metric-detail-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ========================================================= 기간 필터 ========================================================= */
 .period-filter-box {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-
-
 .period-input-area {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-top: 10px;
+} /* ========================================================= 필터 Input / Select ========================================================= */
+.period-filter-box input,
+.period-filter-box select {
+  height: 38px;
+  padding: 0 11px;
+  border: 1px solid #d5dce5;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
-
+.period-filter-box input:focus,
+.period-filter-box select:focus {
+  border-color: #4284f2;
+  box-shadow: 0 0 0 3px rgba(66, 132, 242, 0.1);
+} /* ========================================================= Action Button ========================================================= */
 .business-action-button {
-  transition: background-color 0.15s ease;
+  border-radius: 6px;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.1s ease;
+} /* 사업등록 */
+.business-register-button {
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
 }
-
-/* 사업등록 */
 .business-register-button:hover {
   background-color: #1d4ed8 !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+} /* 필터저장 */
+.filter-save-button {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #475569;
 }
-
-/* 필터저장 */
 .filter-save-button:hover:not(:disabled) {
-  background-color: #d1d5db !important;
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1;
+} /* 조회 */
+.filter-search-button {
+  border: 1px solid #64748b;
+  background: #64748b;
+  color: #ffffff;
+  font-weight: 500;
 }
-
-/* 조회 */
 .filter-search-button:hover {
-  background-color: #6b7280 !important;
+  background-color: #475569 !important;
+} /* 필터삭제 */
+.filter-delete-button {
+  border: 1px solid #fecaca;
+  background: #ef4444;
+  color: #ffffff;
 }
-
-/* 필터삭제 */
 .filter-delete-button:hover {
-  background-color: #b91c1c !important;
+  background-color: #dc2626 !important;
+} /* 초기화 */
+.filter-reset-button {
+  border: 1px solid #ef4444;
+  background: #ffffff;
+  color: #ef4444;
 }
-
-/* 초기화 */
 .filter-reset-button:hover {
   background-color: #fef2f2 !important;
-}
-
-/* 클릭 순간 */
+  border-color: #dc2626;
+} /* 클릭 */
 .business-action-button:active:not(:disabled) {
-  filter: brightness(0.95);
-}
-
-/* 모달 버튼 공통 */
+  transform: translateY(1px);
+  filter: brightness(0.97);
+} /* 비활성 */
+.business-action-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+} /* ========================================================= Modal Button ========================================================= */
 .modal-action-button {
-  transition: background-color 0.15s ease;
+  border-radius: 6px;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease;
+} /* 등록 / 수정 */
+.modal-submit-button {
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
 }
-
-/* 등록 / 수정 → 진한 파랑 */
 .modal-submit-button:hover:not(:disabled) {
   background-color: #1d4ed8 !important;
+} /* 취소 */
+.modal-cancel-button {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #64748b;
 }
-
-/* 취소 → 필터저장과 동일한 연한 회색 */
 .modal-cancel-button:hover:not(:disabled) {
-  background-color: #d1d5db !important;
-}
-
-/* 클릭 */
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1;
+} /* 클릭 */
 .modal-action-button:active:not(:disabled) {
-  filter: brightness(0.95);
-}
-
-.filter-save-button:hover:not(:disabled) {
-  background-color: #f5f2f2 !important;
+  transform: translateY(1px);
+  filter: brightness(0.97);
 }
