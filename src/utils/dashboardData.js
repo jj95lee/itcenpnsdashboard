@@ -3,9 +3,11 @@
 export function makeOverallData(rows) {
   let sales2024 = 0;
   let sales2025 = 0;
+  let sales2026 = 0;
 
   let profit2024 = 0;
   let profit2025 = 0;
+  let profit2026 = 0;
 
   rows.forEach((row) => {
     const year = String(row["연도"]);
@@ -15,24 +17,28 @@ export function makeOverallData(rows) {
     if (metric === "매출") {
       if (year === "2024") sales2024 += total;
       if (year === "2025") sales2025 += total;
+      if (year === "2026") sales2026 += total;
     }
 
     if (metric === "매출이익") {
       if (year === "2024") profit2024 += total;
       if (year === "2025") profit2025 += total;
+      if (year === "2026") profit2026 += total;
     }
   });
-
+  
   return [
     {
       label: "매출",
       y2024: sales2024,
       y2025: sales2025,
+      y2026: sales2026,
     },
     {
       label: "매출이익",
       y2024: profit2024,
       y2025: profit2025,
+      y2026: profit2026,
     },
   ];
 }

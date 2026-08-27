@@ -41,7 +41,7 @@ export default function Dashboard({ masterData }) {
         <div className="dashboard__header-content">
           <h1 className="dashboard__title">솔루션영업팀 손익전망</h1>
 
-          <p className="dashboard__meta">2024–2025 실적 비교</p>
+          <p className="dashboard__meta">2024–2026 실적 비교</p>
         </div>
       </header>
       <main className="dashboard__main">

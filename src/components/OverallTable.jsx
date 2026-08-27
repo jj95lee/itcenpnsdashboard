@@ -1,53 +1,74 @@
-import { calcChange, calcYoy, formatNumber, formatYoy } from '../utils/formatters'  // 증감, 증감률, 소수점 표시
+import { calcYoy, formatNumber, formatYoy } from '../utils/formatters'
 
 export default function OverallTable({ rows = [], unit = "백만원" }) {
   return (
     <div className="table-wrapper">
-      <table className="data-table">  {/* 표 내용 시작 */}
-        <thead>  {/* 표 머리글 */}
+      <table className="data-table">
+        <thead>
           <tr>
             <th className="col-label">구분</th>
             <th>2024</th>
             <th>2025</th>
-            <th>증감</th>
-            <th>YOY(%)</th>
+            <th>2026</th>
+            <th>2025 YoY(%)</th>
+            <th>2026 YoY(%)</th>
           </tr>
         </thead>
 
-        <tbody>  {/* 실제 데이터 들어가는 곳 */}
-          {rows.map((row) => { // 반복문
-            const change = calcChange(row.y2024, row.y2025)
-            const yoy = calcYoy(row.y2024, row.y2025)
+        <tbody>
+          {rows.map((row) => {
+            const yoy2025 = calcYoy(row.y2024, row.y2025)
+            const yoy2026 = calcYoy(row.y2025, row.y2026)
 
             return (
               <tr key={row.label}>
                 <td className="col-label">{row.label}</td>
-                <td className="col-number">{formatNumber(row.y2024)}</td>
-                <td className="col-number">{formatNumber(row.y2025)}</td>
-                <td
-                  className={`col-number ${change > 0 ? 'positive' :
-                      change < 0 ? 'negative' :
-                        ''
-                    }`}
-                >
-                  {change > 0 ? '+' : ''}
-                  {formatNumber(change)}
+
+                <td className="col-number">
+                  {formatNumber(row.y2024)}
                 </td>
+
+                <td className="col-number">
+                  {formatNumber(row.y2025)}
+                </td>
+
+                <td className="col-number">
+                  {formatNumber(row.y2026)}
+                </td>
+
                 <td
-                  className={`col-number ${yoy > 0 ? 'positive' :
-                      yoy < 0 ? 'negative' :
-                        ''
-                    }`}
+                  className={`col-number ${
+                    yoy2025 > 0
+                      ? 'positive'
+                      : yoy2025 < 0
+                        ? 'negative'
+                        : ''
+                  }`}
                 >
-                  {formatYoy(yoy)}  {/* 소수점 + % */}
+                  {formatYoy(yoy2025)}
+                </td>
+
+                <td
+                  className={`col-number ${
+                    yoy2026 > 0
+                      ? 'positive'
+                      : yoy2026 < 0
+                        ? 'negative'
+                        : ''
+                  }`}
+                >
+                  {formatYoy(yoy2026)}
                 </td>
               </tr>
             )
           })}
         </tbody>
+
         <tfoot>
           <tr>
-            <td colSpan={5} className="table-unit">단위: {unit}</td>
+            <td colSpan={6} className="table-unit">
+              단위: {unit}
+            </td>
           </tr>
         </tfoot>
       </table>
