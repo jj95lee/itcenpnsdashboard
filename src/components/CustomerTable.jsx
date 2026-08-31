@@ -1,6 +1,6 @@
 import { calcYoy, formatNumber, formatYoy } from '../utils/formatters'
 
-export default function CustomerTable({ rows, unit = '백만원' }) {
+export default function CustomerTable({ rows, unit = '천원' }) {
   return (
     <div className="table-wrapper">
       <table className="data-table">

@@ -850,6 +850,12 @@ export default function BusinessList({ masterData, reloadData }) {
                     {totalProfit.toLocaleString()}
                   </strong>
                 </span>
+
+                <span style={{ fontSize: "12px", fontWeight: "400"  }}>
+                  (단위 : 천원)
+                  <strong>
+                  </strong>
+                </span>
               </div>
             </h3>
           </div>

@@ -151,13 +151,13 @@
   text-align: center;
 } /* ========================================================= 텍스트 강조 ========================================================= */
 .business-table td:nth-child(2) {
-  font-weight: 600;
+  font-weight: 100;
 }
 .business-table td:nth-child(3) {
-  font-weight: 600;
+  font-weight: 100;
 }
 .business-table td:nth-child(10) {
-  font-weight: 600;
+  font-weight: 400;
 }
 .business-table td:nth-child(11) {
   color: #64748b;
