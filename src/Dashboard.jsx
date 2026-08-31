@@ -1,7 +1,10 @@
 import Card from "./components/Card"; // 카드 틀
 import {
   makeOverallData,
+  makeOverallDataExcludingMaintenance,
+  makeMaintenanceData,
   makeProductData,
+  makeProductDataExcludingMaintenance,
   makeRenewalData,
   makeProcurementData,
   makeCustomerData,
@@ -25,18 +28,23 @@ export default function Dashboard({ masterData }) {
   const rows = masterData.rows;
 
   const overallData = makeOverallData(rows);
+  const overallDataExcludingMaintenance =
+    makeOverallDataExcludingMaintenance(rows);
+
+  const maintenanceData = makeMaintenanceData(rows);
+
   const productData = makeProductData(rows);
+  const productDataExcludingMaintenance =
+    makeProductDataExcludingMaintenance(rows);
+
   const renewalData = makeRenewalData(rows);
   const procurementData = makeProcurementData(rows);
   const customerData = makeCustomerData(rows);
 
   return (
-    <div className="dashboard" >
-
+    <div className="dashboard">
       {/* 전체 화면 */}
       <header className="dashboard__header">
-
-        
         {/* 상단 제목 */}
         <div className="dashboard__header-content">
           <h1 className="dashboard__title">솔루션영업팀 손익전망</h1>
@@ -45,38 +53,97 @@ export default function Dashboard({ masterData }) {
         </div>
       </header>
       <main className="dashboard__main">
-
         {/* 메인 내용 */}
         {/* 전체 카드 */}
-        <Card
-          className="overall-card"
-          title="전체"
-          subtitle="팀 전체 실적 요약"
-        >
-          <div className="overall-layout">
+        <Card className="overall-card" title="전체">
+          {/* 유지보수 포함 */}
+          <div className="overall-section">
+            <p className="product-section-subtitle">
+              팀 전체 실적 요약<span>(유지보수 포함)</span>
+            </p>
 
-            {/* 표 + 그래프 배치 */}
-            <div className="overall-table">
-              <OverallTable rows={overallData} />
+            <div className="overall-layout">
+              <div className="overall-table">
+                <OverallTable rows={overallData} />
+              </div>
+
+              <div className="overall-chart">
+                <OverallChart data={overallData} />
+              </div>
             </div>
-            <div className="overall-chart">
-              <OverallChart data={overallData} />
+          </div>
+
+          {/* 유지보수 제외 */}
+          <div className="overall-section overall-section--exclude">
+            <p className="product-section-subtitle">
+              팀 전체 실적 요약<span>(유지보수 제외)</span>
+            </p>
+
+            <div className="overall-layout">
+              <div className="overall-table">
+                <OverallTable rows={overallDataExcludingMaintenance} />
+              </div>
+
+              <div className="overall-chart">
+                <OverallChart data={overallDataExcludingMaintenance} />
+              </div>
             </div>
           </div>
         </Card>
+
+        {/* 유지보수 카드 */}
+        <Card className="maintenance-card" title="유지보수">
+          <p className="product-section-subtitle">
+            유지보수 실적 요약
+          </p>
+          <div className="overall-layout">
+            <div className="overall-table">
+              <OverallTable rows={maintenanceData} />
+            </div>
+
+            <div className="overall-chart">
+              <OverallChart data={maintenanceData} />
+            </div>
+          </div>
+        </Card>
+
         {/* 제품별 카드 */}
         <Card
           className="product-card"
           title="제품별 판매 추이"
-          subtitle="제품별 매출 및 손익 현황"
+          // subtitle="제품별 매출 및 손익 현황"
         >
-          <div className="product-layout">
-            <div className="product-table">
-              <ProductTable rows={productData} />
-            </div>
+          {/* 유지보수 포함 */}
+          <div className="product-section">
+            <p className="product-section-subtitle">
+              제품별 매출 및 손익 현황<span>(유지보수 포함)</span>
+            </p>
 
-            <div className="product-chart">
-              <ProductChart data={productData} />
+            <div className="product-layout">
+              <div className="product-table">
+                <ProductTable rows={productData} />
+              </div>
+
+              <div className="product-chart">
+                <ProductChart data={productData} />
+              </div>
+            </div>
+          </div>
+
+          {/* 유지보수 제외 */}
+          <div className="product-section product-section--exclude">
+            <p className="product-section-subtitle">
+              제품별 매출 및 손익 현황<span>(유지보수 제외)</span>
+            </p>
+
+            <div className="product-layout">
+              <div className="product-table">
+                <ProductTable rows={productDataExcludingMaintenance} />
+              </div>
+
+              <div className="product-chart">
+                <ProductChart data={productDataExcludingMaintenance} />
+              </div>
             </div>
           </div>
         </Card>
@@ -84,7 +151,7 @@ export default function Dashboard({ masterData }) {
         <Card
           className="renewal-card"
           title="갱신형 제품"
-          subtitle="갱신형 제품 실적"
+          subtitle="갱신형 제품 실적 (유지보수 제외)"
         >
           <div className="renewal-layout">
             <div className="renewal-table">
@@ -100,7 +167,7 @@ export default function Dashboard({ masterData }) {
         <Card
           className="procurement-card"
           title="조달판매"
-          subtitle="조달판매 실적"
+          subtitle="조달판매 실적 (유지보수 제외)"
         >
           <div className="procurement-layout">
             <div className="procurement-table">
@@ -116,7 +183,7 @@ export default function Dashboard({ masterData }) {
         <Card
           className="customer-card"
           title="고객사 분류별 판매 추이"
-          subtitle="고객사별 실적"
+          subtitle="고객사별 실적 (유지보수 포함)"
         >
           <div className="customer-layout">
             <div className="customer-table">
@@ -130,11 +197,12 @@ export default function Dashboard({ masterData }) {
         </Card>
       </main>
       <footer className="dashboard__footer">
-
         {/* 하단 */}
-        <p>© 2026 ITCEN PNS · FinTech Security Department · Sales Management Dashboard</p>
+        <p>
+          © 2026 ITCEN PNS · FinTech Security Department · Sales Management
+          Dashboard
+        </p>
       </footer>
     </div>
   );
 }
-

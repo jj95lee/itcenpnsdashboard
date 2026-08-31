@@ -169,7 +169,7 @@ button {
 }
 
 .reset-box {
-  transform: translateX(148px);
+  transform: translateX(155px);
 }
 
 .detail-button {
@@ -213,7 +213,7 @@ button {
   margin: 0;
 }
 
-.multi-select-list {
+/* .multi-select-list {
   border: 1px solid #333;
   border-radius: 4px;
   padding: 6px;
@@ -223,7 +223,7 @@ button {
 
 .multi-select-list {
   padding: 0px 10px;
-}
+} */
 
 .multi-option {
   font-size: 12px;
@@ -239,11 +239,11 @@ button {
 }
 
 /* 기본보다 조금 크게 */
-.multi-select-list input[type="checkbox"] {
+/* .multi-select-list input[type="checkbox"] {
   width: 11px;
   height: 11px;
   transform: translateY(2px);
-}
+} */
 
 /* .multi-select-list label {
   display: flex;
@@ -251,6 +251,116 @@ button {
   gap: 6px;
   font-size: 13px;
 } */
+
+.multi-dropdown {
+  position: relative;
+  width: 260px;
+}
+
+.multi-dropdown-button {
+  width: 260px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 12px;
+
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+
+  color: #333;
+  font-size: 13px;
+
+  cursor: pointer;
+  box-sizing: border-box;
+
+  text-align: left;
+}
+
+.multi-dropdown-button:hover {
+  border-color: #8fb3f5;
+}
+
+.multi-dropdown-button.selected {
+  background: #f3f8ff;
+  border-color: #4f8cff;
+}
+
+.multi-dropdown-arrow {
+  font-size: 14px;
+  color: #6b7280;
+  transition: transform 0.15s ease;
+}
+
+.multi-dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.multi-dropdown-menu {
+  position: absolute;
+
+  top: calc(100% + 4px);
+  left: 0;
+
+  width: 260px;
+
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+
+  padding: 5px 0;
+
+  z-index: 1000;
+
+  max-height: 240px;
+  overflow-y: auto;
+
+  box-sizing: border-box;
+}
+
+.multi-dropdown-option {
+  min-height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 12px;
+
+  font-size: 13px;
+  color: #333;
+
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.multi-dropdown-option:hover {
+  background: #f5f8fc;
+}
+
+.multi-dropdown-option input {
+  width: 15px;
+  height: 15px;
+
+  margin: 0;
+
+  cursor: pointer;
+}
+
+.multi-dropdown-all {
+  font-weight: 600;
+}
+
+.multi-dropdown-divider {
+  height: 1px;
+  background: #edf0f4;
+  margin: 4px 0;
+}
 
 .multi-option {
   font-size: 12px;
@@ -312,4 +422,82 @@ button {
 
 .period-check-box {
   margin-bottom: 10px;
+}
+
+.multi-select-dropdown {
+  position: relative;
+  width: 260px;
+}
+
+.multi-select-trigger {
+  width: 260px;
+  height: 40px;
+  padding: 0 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+
+  box-sizing: border-box;
+}
+
+.multi-select-trigger:hover {
+  border-color: #4f8cff;
+}
+
+.multi-select-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+
+  width: 260px;
+  max-height: 220px;
+  overflow-y: auto;
+
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.multi-select-dropdown-menu .multi-option {
+  min-height: 36px;
+  padding: 0 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  font-size: 13px;
+  cursor: pointer;
+
+  box-sizing: border-box;
+}
+
+.multi-select-dropdown-menu .multi-option:hover {
+  background: #f3f8ff;
+}
+
+.multi-select-dropdown-menu .multi-all {
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 600;
+}
+
+.multi-select-dropdown-menu input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  cursor: pointer;
 }

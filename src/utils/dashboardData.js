@@ -1,4 +1,5 @@
 // ============================== 전체 ==============================
+// 유지보수 포함
 
 export function makeOverallData(rows) {
   let sales2024 = 0;
@@ -43,7 +44,110 @@ export function makeOverallData(rows) {
   ];
 }
 
+// ============================== 전체 ==============================
+
+// 유지보수 제외
+export function makeOverallDataExcludingMaintenance(rows) {
+  let sales2024 = 0;
+  let sales2025 = 0;
+  let sales2026 = 0;
+
+  let profit2024 = 0;
+  let profit2025 = 0;
+  let profit2026 = 0;
+
+  rows.forEach((row) => {
+    // 유지보수 데이터 제외
+    if (String(row["매출유형"] || "") === "유지보수") {
+      return;
+    }
+
+    const year = String(row["연도"]);
+    const metric = row["metric"];
+    const total = Number(row["연간계"] || 0);
+
+    if (metric === "매출") {
+      if (year === "2024") sales2024 += total;
+      if (year === "2025") sales2025 += total;
+      if (year === "2026") sales2026 += total;
+    }
+
+    if (metric === "매출이익") {
+      if (year === "2024") profit2024 += total;
+      if (year === "2025") profit2025 += total;
+      if (year === "2026") profit2026 += total;
+    }
+  });
+
+  return [
+    {
+      label: "매출",
+      y2024: sales2024,
+      y2025: sales2025,
+      y2026: sales2026,
+    },
+    {
+      label: "매출이익",
+      y2024: profit2024,
+      y2025: profit2025,
+      y2026: profit2026,
+    },
+  ];
+}
+
+// ============================== 유지보수 ==============================
+
+// 유지보수 데이터만
+export function makeMaintenanceData(rows) {
+  let sales2024 = 0;
+  let sales2025 = 0;
+  let sales2026 = 0;
+
+  let profit2024 = 0;
+  let profit2025 = 0;
+  let profit2026 = 0;
+
+  rows.forEach((row) => {
+    // 유지보수 데이터만
+    if (String(row["매출유형"] || "") !== "유지보수") {
+      return;
+    }
+
+    const year = String(row["연도"]);
+    const metric = row["metric"];
+    const total = Number(row["연간계"] || 0);
+
+    if (metric === "매출") {
+      if (year === "2024") sales2024 += total;
+      if (year === "2025") sales2025 += total;
+      if (year === "2026") sales2026 += total;
+    }
+
+    if (metric === "매출이익") {
+      if (year === "2024") profit2024 += total;
+      if (year === "2025") profit2025 += total;
+      if (year === "2026") profit2026 += total;
+    }
+  });
+
+  return [
+    {
+      label: "매출",
+      y2024: sales2024,
+      y2025: sales2025,
+      y2026: sales2026,
+    },
+    {
+      label: "매출이익",
+      y2024: profit2024,
+      y2025: profit2025,
+      y2026: profit2026,
+    },
+  ];
+}
+
 // ============================== 제품별 ==============================
+// 유지보수 포함
 
 export function makeProductData(rows) {
   const result = {};
@@ -52,24 +156,93 @@ export function makeProductData(rows) {
     let product = row["구분"] || "(공백)";
     product = product.replace("솔루션 - ", "").trim();
 
-    // ===== 숨길 항목 =====
+    // ===== 숨길 제품 =====
     const hideProducts = [
       "(공백)",
       "IFRS",
       "서비스",
-      "유지보수",
       "상품",
       "기타(상품)",
       "CMVP",
-      //   "AppIron",
-      //   "Keypad",
-      //   "Vaccine",
-      //   "EdgeDB",
-      //   "enxection",
       "",
     ];
 
-    // 숨길 항목이면 제외
+    // 제품명 자체가 숨길 대상이면 제외
+    if (hideProducts.includes(product)) return;
+
+    const year = String(row["연도"]);
+    const metric = row["metric"];
+    const total = Number(row["연간계"] || 0);
+
+    if (!result[product]) {
+      result[product] = {
+        sales2024: 0,
+        sales2025: 0,
+        sales2026: 0,
+        profit2024: 0,
+        profit2025: 0,
+        profit2026: 0,
+      };
+    }
+
+    if (metric === "매출") {
+      if (year === "2024") result[product].sales2024 += total;
+      if (year === "2025") result[product].sales2025 += total;
+      if (year === "2026") result[product].sales2026 += total;
+    }
+
+    if (metric === "매출이익") {
+      if (year === "2024") result[product].profit2024 += total;
+      if (year === "2025") result[product].profit2025 += total;
+      if (year === "2026") result[product].profit2026 += total;
+    }
+  });
+
+  return Object.entries(result).map(([product, value]) => ({
+    product,
+    rows: [
+      {
+        label: "매출",
+        y2024: value.sales2024,
+        y2025: value.sales2025,
+        y2026: value.sales2026,
+      },
+      {
+        label: "매출이익",
+        y2024: value.profit2024,
+        y2025: value.profit2025,
+        y2026: value.profit2026,
+      },
+    ],
+  }));
+}
+
+// ============================== 제품별 ==============================
+// 유지보수 제외
+
+export function makeProductDataExcludingMaintenance(rows) {
+  const result = {};
+
+  rows.forEach((row) => {
+    // 매출유형이 유지보수인 데이터 제외
+    if (String(row["매출유형"] || "") === "유지보수") {
+      return;
+    }
+
+    let product = row["구분"] || "(공백)";
+    product = product.replace("솔루션 - ", "").trim();
+
+    // ===== 숨길 제품 =====
+    const hideProducts = [
+      "(공백)",
+      "IFRS",
+      "서비스",
+      "상품",
+      "기타(상품)",
+      "CMVP",
+      "",
+    ];
+
     if (hideProducts.includes(product)) return;
 
     const year = String(row["연도"]);
@@ -133,6 +306,7 @@ export function makeRenewalData(rows) {
   rows.forEach((row) => {
     // 사업명에 "갱신"이 없으면 제외
     if (!String(row["사업명"] || "").includes("갱신")) return;
+    if (String(row["매출유형"] || "") === "유지보수") return;
 
     const year = String(row["연도"]);
     const metric = row["metric"];
@@ -179,8 +353,9 @@ export function makeProcurementData(rows) {
   let profit2026 = 0;
 
   rows.forEach((row) => {
-    // 사업명에 "조달"이라는 단어가 포함된 데이터만
+    // 사업명에 "조달"이 포함되고, 매출유형이 "유지보수"가 아닌 데이터만
     if (!String(row["사업명"] || "").includes("조달")) return;
+    if (String(row["매출유형"] || "") === "유지보수") return;
 
     const year = String(row["연도"]);
     const metric = row["metric"];
@@ -290,35 +465,71 @@ export function makeCompareData(savedFilters, masterRows) {
     let profit = 0;
     let cost = 0;
 
+    // =========================================================
     // 저장된 필터 조건으로 다시 검색
+    // =========================================================
     const filtered = masterRows.filter((row) => {
-      // 일반 필터
       for (const key in filter.filters) {
         const filterValue = filter.filters[key];
 
-        if (!filterValue) continue;
+        // 값이 없는 필터는 무시
+        if (
+          filterValue === "" ||
+          filterValue === null ||
+          filterValue === undefined
+        ) {
+          continue;
+        }
 
-        // "(공백)"은 실제 빈 셀로 처리
+        // =====================================================
+        // 금액 범위는 사업 단위에서 처리하므로 여기서는 제외
+        // =====================================================
+        if (key === "최소금액" || key === "최대금액") {
+          continue;
+        }
+
+        // =====================================================
+        // "(공백)"
+        // =====================================================
         if (filterValue === "(공백)") {
           if (row[key] !== "" && row[key] !== null && row[key] !== undefined) {
             return false;
           }
-        } else {
-          // 사업명은 포함 검색
-          if (key === "사업명") {
-            if (!String(row[key] || "").includes(String(filterValue))) {
-              return false;
-            }
-          } else {
-            // 나머지는 기존처럼 정확히 일치
-            if (String(row[key]) !== String(filterValue)) {
-              return false;
-            }
+
+          continue;
+        }
+
+        // =====================================================
+        // 프로젝트코드 / 사업명
+        // BusinessList의 검색 방식과 동일하게 처리
+        // =====================================================
+        if (key === "프로젝트코드" || key === "사업명") {
+          const rowValue = String(row[key] || "")
+            .toLowerCase()
+            .replace(/\s/g, "");
+
+          const searchValue = String(filterValue || "")
+            .toLowerCase()
+            .replace(/\s/g, "");
+
+          if (!rowValue.includes(searchValue)) {
+            return false;
           }
+
+          continue;
+        }
+
+        // =====================================================
+        // 나머지 필터는 정확히 일치
+        // =====================================================
+        if (String(row[key]) !== String(filterValue)) {
+          return false;
         }
       }
 
+      // =======================================================
       // 다중 선택 필터
+      // =======================================================
       if (filter.multiFields && filter.multiSelected) {
         for (const key in filter.multiFields) {
           if (!filter.multiFields[key]) continue;
@@ -338,7 +549,10 @@ export function makeCompareData(savedFilters, masterRows) {
 
       return true;
     });
+
+    // =========================================================
     // BusinessList와 동일한 방식으로 그룹화
+    // =========================================================
     const grouped = {};
     const groupedRows = [];
 
@@ -374,8 +588,51 @@ export function makeCompareData(savedFilters, masterRows) {
       grouped[key].metricList.push(row);
     });
 
+    // =========================================================
+    // 금액 범위 필터
+    // BusinessList와 동일하게 매출의 연간계를 기준으로 처리
+    // =========================================================
+    const hasMinAmount =
+      filter.filters.최소금액 !== "" &&
+      filter.filters.최소금액 !== null &&
+      filter.filters.최소금액 !== undefined;
+
+    const hasMaxAmount =
+      filter.filters.최대금액 !== "" &&
+      filter.filters.최대금액 !== null &&
+      filter.filters.최대금액 !== undefined;
+
+    const filteredGrouped = groupedRows.filter((group) => {
+      if (!hasMinAmount && !hasMaxAmount) {
+        return true;
+      }
+
+      const salesRow = group.metrics["매출"];
+
+      // 매출 행이 없으면 제외
+      if (!salesRow) {
+        return false;
+      }
+
+      const annualAmount = Number(
+        String(salesRow["연간계"] || 0).replace(/,/g, ""),
+      );
+
+      const minAmount = hasMinAmount
+        ? Number(filter.filters.최소금액)
+        : -Infinity;
+
+      const maxAmount = hasMaxAmount
+        ? Number(filter.filters.최대금액)
+        : Infinity;
+
+      return annualAmount >= minAmount && annualAmount <= maxAmount;
+    });
+
+    // =========================================================
     // 금액 계산
-    groupedRows.forEach((group) => {
+    // =========================================================
+    filteredGrouped.forEach((group) => {
       const salesRow = group.metricList?.find((item) => item.metric === "매출");
 
       const profitRow = group.metricList?.find(
@@ -386,7 +643,9 @@ export function makeCompareData(savedFilters, masterRows) {
         (item) => item.metric === "매출원가",
       );
 
+      // =======================================================
       // 조회기간 적용
+      // =======================================================
       if (
         filter.periodFilter &&
         filter.periodFilter.start &&
@@ -440,7 +699,9 @@ export function makeCompareData(savedFilters, masterRows) {
         }
       }
 
+      // =======================================================
       // 조회기간 미적용
+      // =======================================================
       else {
         if (salesRow) {
           sales += Number(String(salesRow["연간계"] || 0).replace(/,/g, ""));

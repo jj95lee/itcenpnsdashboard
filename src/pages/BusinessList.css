@@ -72,9 +72,9 @@
 } /* New / Sold */
 .business-table th:nth-child(3),
 .business-table td:nth-child(3) {
-  width: 48px !important;
+  width: 54px !important;
   min-width: 48px;
-  max-width: 48px;
+  max-width: 54px;
   text-align: center;
 } /* 매출유형 */
 .business-table th:nth-child(4),

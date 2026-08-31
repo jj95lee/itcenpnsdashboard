@@ -1,4 +1,194 @@
-import { useEffect, useRef, useMemo, useCallback } from "react";
+import { useEffect, useRef, useMemo, useCallback, useState } from "react";
+
+function MultiDropdown({
+  field,
+  options,
+  selected,
+  onChange,
+  onSelectAll,
+  getOptionLabel = (option) => option,
+  getOptionValue = (option) => String(option),
+}) {
+  const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  const allSelected = selected.length === options.length && options.length > 0;
+
+  const toggleOption = (option) => {
+    const value = getOptionValue(option);
+
+    if (selected.includes(value)) {
+      onChange(selected.filter((item) => item !== value));
+    } else {
+      onChange([...selected, value]);
+    }
+  };
+
+  const getDisplayText = () => {
+    if (selected.length === 0) {
+      return "전체";
+    }
+
+    if (selected.length === 1) {
+      const selectedOption = options.find(
+        (option) => getOptionValue(option) === selected[0],
+      );
+
+      return selectedOption ? getOptionLabel(selectedOption) : "1개 선택됨";
+    }
+
+    if (selected.length === options.length) {
+      return "전체";
+    }
+
+    return `${selected.length}개 선택됨`;
+  };
+
+  return (
+    <div ref={ref} className="multi-dropdown">
+      <button
+        type="button"
+        className={`multi-dropdown-button ${
+          selected.length > 0 ? "selected" : ""
+        }`}
+        onClick={() => setOpen((prev) => !prev)}
+      >
+        <span>{getDisplayText()}</span>
+
+        <span className={`multi-dropdown-arrow ${open ? "open" : ""}`}>▾</span>
+      </button>
+
+      {open && (
+        <div className="multi-dropdown-menu">
+          <label className="multi-dropdown-option multi-dropdown-all">
+            <span>전체</span>
+
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={() => onSelectAll()}
+            />
+          </label>
+
+          <div className="multi-dropdown-divider" />
+
+          {options.map((option) => {
+            const value = getOptionValue(option);
+
+            return (
+              <label key={value} className="multi-dropdown-option">
+                <span>{getOptionLabel(option)}</span>
+
+                <input
+                  type="checkbox"
+                  checked={selected.includes(value)}
+                  onChange={() => toggleOption(option)}
+                />
+              </label>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const MultiSelectDropdown = ({
+  field,
+  options,
+  multiSelected,
+  handleSelectAll,
+  handleMultiChange,
+  dropdownOpen,
+  setDropdownOpen,
+  optionLabelKey,
+  optionValueKey,
+}) => {
+  const selected = multiSelected[field] || [];
+
+  const getValue = (item) =>
+    optionValueKey ? String(item[optionValueKey]) : String(item);
+
+  const getLabel = (item) => (optionLabelKey ? item[optionLabelKey] : item);
+
+  const isAllSelected =
+    selected.length === options.length && options.length > 0;
+
+  return (
+    <div className="multi-select-dropdown">
+      <button
+        type="button"
+        className="multi-select-trigger"
+        onClick={() => {
+          setDropdownOpen((prev) => ({
+            ...prev,
+            [field]: !prev[field],
+          }));
+        }}
+      >
+        <span>
+          {selected.length === 0
+            ? "전체"
+            : isAllSelected
+              ? "전체"
+              : `${selected.length}개 선택`}
+        </span>
+
+        <span className="dropdown-arrow">
+          {dropdownOpen[field] ? "⌃" : "⌄"}
+        </span>
+      </button>
+
+      {dropdownOpen[field] && (
+        <div className="multi-select-dropdown-menu">
+          <label className="multi-option multi-all">
+            <span>전체</span>
+
+            <input
+              type="checkbox"
+              checked={isAllSelected}
+              onChange={() => handleSelectAll(field, options)}
+            />
+          </label>
+
+          {options.map((item) => {
+            const value = getValue(item);
+            const label = getLabel(item);
+
+            return (
+              <label key={value} className="multi-option">
+                <span>{label}</span>
+
+                <input
+                  type="checkbox"
+                  checked={selected.includes(value)}
+                  onChange={(e) =>
+                    handleMultiChange(field, value, e.target.checked)
+                  }
+                />
+              </label>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function BasicInfo({
   masterData,
@@ -17,6 +207,9 @@ export default function BasicInfo({
   usePeriodFilter,
   lockYearFilter,
 }) {
+  const [dropdownOpen, setDropdownOpen] = useState({});
+  const [minAmount, setMinAmount] = useState("");
+  const [maxAmount, setMaxAmount] = useState("");
   const getInputStyle = (value) => ({
     width: "260px",
     height: "40px",
@@ -51,16 +244,22 @@ export default function BasicInfo({
     "담당자",
     "확도",
     "진행도",
+    "금액범위",
   ];
 
   const handleSelectAll = (field, options) => {
-    setMultiSelected((prev) => ({
-      ...prev,
-      [field]:
-        prev[field].length === options.length
-          ? []
-          : options.map((v) => String(v)),
-    }));
+    setMultiSelected((prev) => {
+      const current = prev[field] || [];
+
+      const values = options.map((option) =>
+        typeof option === "object" ? String(option.value) : String(option),
+      );
+
+      return {
+        ...prev,
+        [field]: current.length === values.length ? [] : values,
+      };
+    });
   };
 
   const handleMultiChange = (field, value, checked) => {
@@ -121,6 +320,25 @@ export default function BasicInfo({
         if (isMonthB) return 1;
 
         return String(a).localeCompare(String(b), "ko");
+      });
+    } else if (field === "매출유형") {
+      // 매출유형 원하는 순서
+      const order = ["유지보수", "기타매출", "상품매출", "제품매출"];
+
+      values.sort((a, b) => {
+        const indexA = order.indexOf(a);
+        const indexB = order.indexOf(b);
+
+        // 지정한 항목은 위 순서대로
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+
+        // 혹시 새로운 매출유형이 추가되면 뒤쪽에 표시
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+
+        return a.localeCompare(b, "ko");
       });
     } else {
       values.sort();
@@ -423,6 +641,9 @@ export default function BasicInfo({
       매출월: "",
       진행도: "",
       비고: "",
+      // 금액 범위
+      최소금액: "",
+      최대금액: "",
     });
     // 체크박스 선택값 초기화
     setMultiSelected({
@@ -627,44 +848,15 @@ export default function BasicInfo({
           </label>
 
           {multiFields.연도 ? (
-            <div className="multi-select-list">
-              <label className="multi-all">
-                전체
-                <input
-                  type="checkbox"
-                  checked={
-                    multiSelected.연도.length === yearOptions.length &&
-                    yearOptions.length > 0
-                  }
-                  onChange={() => handleSelectAll("연도", yearOptions)}
-                />
-              </label>
-              {yearOptions.map((year) => (
-                <label key={year} className="multi-option">
-                  {year}
-
-                  <input
-                    type="checkbox"
-                    checked={multiSelected.연도.includes(String(year))}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          연도: [...prev.연도, String(year)],
-                        }));
-                      } else {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          연도: prev.연도.filter(
-                            (item) => item !== String(year),
-                          ),
-                        }));
-                      }
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+            <MultiSelectDropdown
+              field="연도"
+              options={yearOptions}
+              multiSelected={multiSelected}
+              handleSelectAll={handleSelectAll}
+              handleMultiChange={handleMultiChange}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+            />
           ) : (
             <select
               style={getInputStyle(formData.연도)}
@@ -874,32 +1066,15 @@ export default function BasicInfo({
           </label>
 
           {multiFields["New/Sold"] ? (
-            <div className="multi-select-list">
-              <label>
-                전체
-                <input
-                  type="checkbox"
-                  checked={
-                    multiSelected["New/Sold"].length ===
-                      newSoldOptions.length && newSoldOptions.length > 0
-                  }
-                  onChange={() => handleSelectAll("New/Sold", newSoldOptions)}
-                />
-              </label>
-              {newSoldOptions.map((item) => (
-                <label key={item} className="multi-option">
-                  {item}
-
-                  <input
-                    type="checkbox"
-                    checked={multiSelected["New/Sold"].includes(item)}
-                    onChange={(e) => {
-                      handleMultiChange("New/Sold", item, e.target.checked);
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+            <MultiSelectDropdown
+              field="New/Sold"
+              options={newSoldOptions}
+              multiSelected={multiSelected}
+              handleSelectAll={handleSelectAll}
+              handleMultiChange={handleMultiChange}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+            />
           ) : (
             <select
               style={getInputStyle(formData["New/Sold"])}
@@ -982,42 +1157,15 @@ export default function BasicInfo({
           </label>
 
           {multiFields.매출유형 ? (
-            <div className="multi-select-list">
-              <label>
-                전체
-                <input
-                  type="checkbox"
-                  checked={
-                    multiSelected.매출유형.length === salesTypeOptions.length &&
-                    salesTypeOptions.length > 0
-                  }
-                  onChange={() => handleSelectAll("매출유형", salesTypeOptions)}
-                />
-              </label>
-              {salesTypeOptions.map((item) => (
-                <label key={item} className="multi-option">
-                  {item}
-
-                  <input
-                    type="checkbox"
-                    checked={multiSelected.매출유형.includes(item)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          매출유형: [...prev.매출유형, item],
-                        }));
-                      } else {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          매출유형: prev.매출유형.filter((v) => v !== item),
-                        }));
-                      }
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+            <MultiSelectDropdown
+              field="매출유형"
+              options={salesTypeOptions}
+              multiSelected={multiSelected}
+              handleSelectAll={handleSelectAll}
+              handleMultiChange={handleMultiChange}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+            />
           ) : (
             <select
               style={getInputStyle(formData.매출유형)}
@@ -1098,42 +1246,15 @@ export default function BasicInfo({
           </label>
 
           {multiFields.구분 ? (
-            <div className="multi-select-list">
-              <label>
-                전체
-                <input
-                  type="checkbox"
-                  checked={
-                    multiSelected.구분.length === productOptions.length &&
-                    productOptions.length > 0
-                  }
-                  onChange={() => handleSelectAll("구분", productOptions)}
-                />
-              </label>
-              {productOptions.map((item) => (
-                <label key={item} className="multi-option">
-                  {item}
-
-                  <input
-                    type="checkbox"
-                    checked={multiSelected.구분.includes(item)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          구분: [...prev.구분, item],
-                        }));
-                      } else {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          구분: prev.구분.filter((v) => v !== item),
-                        }));
-                      }
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+            <MultiSelectDropdown
+              field="구분"
+              options={productOptions}
+              multiSelected={multiSelected}
+              handleSelectAll={handleSelectAll}
+              handleMultiChange={handleMultiChange}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+            />
           ) : (
             <select
               style={getInputStyle(formData.구분)}
@@ -1212,45 +1333,15 @@ export default function BasicInfo({
           </label>
 
           {multiFields.고객유형 ? (
-            <div className="multi-select-list">
-              <label>
-                전체
-                <input
-                  type="checkbox"
-                  checked={
-                    multiSelected.고객유형.length ===
-                      customerTypeOptions.length &&
-                    customerTypeOptions.length > 0
-                  }
-                  onChange={() =>
-                    handleSelectAll("고객유형", customerTypeOptions)
-                  }
-                />
-              </label>
-              {customerTypeOptions.map((item) => (
-                <label key={item} className="multi-option">
-                  {item}
-
-                  <input
-                    type="checkbox"
-                    checked={multiSelected.고객유형.includes(item)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          고객유형: [...prev.고객유형, item],
-                        }));
-                      } else {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          고객유형: prev.고객유형.filter((v) => v !== item),
-                        }));
-                      }
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+            <MultiSelectDropdown
+              field="고객유형"
+              options={customerTypeOptions}
+              multiSelected={multiSelected}
+              handleSelectAll={handleSelectAll}
+              handleMultiChange={handleMultiChange}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+            />
           ) : (
             <select
               style={getInputStyle(formData.고객유형)}
@@ -1327,42 +1418,15 @@ export default function BasicInfo({
           </label>
 
           {multiFields.매출처 ? (
-            <div className="multi-select-list">
-              <label>
-                전체
-                <input
-                  type="checkbox"
-                  checked={
-                    multiSelected.매출처.length === vendorOptions.length &&
-                    vendorOptions.length > 0
-                  }
-                  onChange={() => handleSelectAll("매출처", vendorOptions)}
-                />
-              </label>
-              {vendorOptions.map((item) => (
-                <label key={item} className="multi-option">
-                  {item}
-
-                  <input
-                    type="checkbox"
-                    checked={multiSelected.매출처.includes(item)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          매출처: [...prev.매출처, item],
-                        }));
-                      } else {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          매출처: prev.매출처.filter((v) => v !== item),
-                        }));
-                      }
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+            <MultiSelectDropdown
+              field="매출처"
+              options={vendorOptions}
+              multiSelected={multiSelected}
+              handleSelectAll={handleSelectAll}
+              handleMultiChange={handleMultiChange}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+            />
           ) : (
             <select
               style={getInputStyle(formData.매출처)}
@@ -1437,42 +1501,15 @@ export default function BasicInfo({
           </label>
 
           {multiFields.최종고객 ? (
-            <div className="multi-select-list">
-              <label>
-                전체
-                <input
-                  type="checkbox"
-                  checked={
-                    multiSelected.최종고객.length === customerOptions.length &&
-                    customerOptions.length > 0
-                  }
-                  onChange={() => handleSelectAll("최종고객", customerOptions)}
-                />
-              </label>
-              {customerOptions.map((item) => (
-                <label key={item} className="multi-option">
-                  {item}
-
-                  <input
-                    type="checkbox"
-                    checked={multiSelected.최종고객.includes(item)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          최종고객: [...prev.최종고객, item],
-                        }));
-                      } else {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          최종고객: prev.최종고객.filter((v) => v !== item),
-                        }));
-                      }
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+            <MultiSelectDropdown
+              field="최종고객"
+              options={customerOptions}
+              multiSelected={multiSelected}
+              handleSelectAll={handleSelectAll}
+              handleMultiChange={handleMultiChange}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+            />
           ) : (
             <select
               style={getInputStyle(formData.최종고객)}
@@ -1545,42 +1582,15 @@ export default function BasicInfo({
           </label>
 
           {multiFields.담당자 ? (
-            <div className="multi-select-list">
-              <label>
-                전체
-                <input
-                  type="checkbox"
-                  checked={
-                    multiSelected.담당자.length === ownerOptions.length &&
-                    ownerOptions.length > 0
-                  }
-                  onChange={() => handleSelectAll("담당자", ownerOptions)}
-                />
-              </label>
-              {ownerOptions.map((item) => (
-                <label key={item} className="multi-option">
-                  {item}
-
-                  <input
-                    type="checkbox"
-                    checked={multiSelected.담당자.includes(item)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          담당자: [...prev.담당자, item],
-                        }));
-                      } else {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          담당자: prev.담당자.filter((v) => v !== item),
-                        }));
-                      }
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+            <MultiSelectDropdown
+              field="담당자"
+              options={ownerOptions}
+              multiSelected={multiSelected}
+              handleSelectAll={handleSelectAll}
+              handleMultiChange={handleMultiChange}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+            />
           ) : (
             <select
               style={getInputStyle(formData.담당자)}
@@ -1651,42 +1661,15 @@ export default function BasicInfo({
           </label>
 
           {multiFields.확도 ? (
-            <div className="multi-select-list">
-              <label>
-                전체
-                <input
-                  type="checkbox"
-                  checked={
-                    multiSelected.확도.length === accuracyOptions.length &&
-                    accuracyOptions.length > 0
-                  }
-                  onChange={() => handleSelectAll("확도", accuracyOptions)}
-                />
-              </label>
-              {accuracyOptions.map((item) => (
-                <label key={item} className="multi-option">
-                  {item}
-
-                  <input
-                    type="checkbox"
-                    checked={multiSelected.확도.includes(String(item))}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          확도: [...prev.확도, String(item)],
-                        }));
-                      } else {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          확도: prev.확도.filter((v) => v !== String(item)),
-                        }));
-                      }
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+            <MultiSelectDropdown
+              field="확도"
+              options={accuracyOptions}
+              multiSelected={multiSelected}
+              handleSelectAll={handleSelectAll}
+              handleMultiChange={handleMultiChange}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+            />
           ) : (
             <select
               style={getInputStyle(formData.확도)}
@@ -1754,42 +1737,15 @@ export default function BasicInfo({
           </label>
 
           {multiFields.수주월 ? (
-            <div className="multi-select-list">
-              <label>
-                전체
-                <input
-                  type="checkbox"
-                  checked={
-                    multiSelected.수주월.length === orderMonthOptions.length &&
-                    orderMonthOptions.length > 0
-                  }
-                  onChange={() => handleSelectAll("수주월", orderMonthOptions)}
-                />
-              </label>
-              {orderMonthOptions.map((item) => (
-                <label key={item} className="multi-option">
-                  {item}
-
-                  <input
-                    type="checkbox"
-                    checked={multiSelected.수주월.includes(item)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          수주월: [...prev.수주월, item],
-                        }));
-                      } else {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          수주월: prev.수주월.filter((v) => v !== item),
-                        }));
-                      }
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+            <MultiSelectDropdown
+              field="수주월"
+              options={orderMonthOptions}
+              multiSelected={multiSelected}
+              handleSelectAll={handleSelectAll}
+              handleMultiChange={handleMultiChange}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+            />
           ) : (
             <select
               style={getInputStyle(formData.수주월)}
@@ -1853,42 +1809,15 @@ export default function BasicInfo({
           </label>
 
           {multiFields.매출월 ? (
-            <div className="multi-select-list">
-              <label>
-                전체
-                <input
-                  type="checkbox"
-                  checked={
-                    multiSelected.매출월.length === salesMonthOptions.length &&
-                    salesMonthOptions.length > 0
-                  }
-                  onChange={() => handleSelectAll("매출월", salesMonthOptions)}
-                />
-              </label>
-              {salesMonthOptions.map((item) => (
-                <label key={item} className="multi-option">
-                  {item}
-
-                  <input
-                    type="checkbox"
-                    checked={multiSelected.매출월.includes(item)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          매출월: [...prev.매출월, item],
-                        }));
-                      } else {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          매출월: prev.매출월.filter((v) => v !== item),
-                        }));
-                      }
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+            <MultiSelectDropdown
+              field="매출월"
+              options={salesMonthOptions}
+              multiSelected={multiSelected}
+              handleSelectAll={handleSelectAll}
+              handleMultiChange={handleMultiChange}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+            />
           ) : (
             <select
               style={getInputStyle(formData.매출월)}
@@ -1952,42 +1881,17 @@ export default function BasicInfo({
           </label>
 
           {multiFields.진행도 ? (
-            <div className="multi-select-list">
-              <label>
-                전체
-                <input
-                  type="checkbox"
-                  checked={
-                    multiSelected.진행도.length === progressOptions.length &&
-                    progressOptions.length > 0
-                  }
-                  onChange={() => handleSelectAll("진행도", progressOptions)}
-                />
-              </label>
-              {progressOptions.map((option) => (
-                <label key={option.value} className="multi-option">
-                  {option.label}
-
-                  <input
-                    type="checkbox"
-                    checked={multiSelected.진행도.includes(option.value)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          진행도: [...prev.진행도, option.value],
-                        }));
-                      } else {
-                        setMultiSelected((prev) => ({
-                          ...prev,
-                          진행도: prev.진행도.filter((v) => v !== option.value),
-                        }));
-                      }
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+            <MultiSelectDropdown
+              field="진행도"
+              options={progressOptions}
+              multiSelected={multiSelected}
+              handleSelectAll={handleSelectAll}
+              handleMultiChange={handleMultiChange}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+              optionLabelKey="label"
+              optionValueKey="value"
+            />
           ) : (
             <select
               style={getInputStyle(formData.진행도)}
@@ -2037,6 +1941,54 @@ export default function BasicInfo({
             }
             style={getInputStyle(formData.사업명)}
           />
+        </div>
+
+        {/* 금액 범위 */}
+        <div>
+          <label>매출 금액</label>
+
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            <input
+              type="number"
+              placeholder="최소 금액"
+              value={formData.최소금액 || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  최소금액: e.target.value,
+                }))
+              }
+              style={{
+                ...getInputStyle(formData.최소금액),
+                width: "122px",
+              }}
+            />
+
+            <span style={{ color: "#6b7280", fontSize: "13px" }}>~</span>
+
+            <input
+              type="number"
+              placeholder="최대 금액"
+              value={formData.최대금액 || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  최대금액: e.target.value,
+                }))
+              }
+              style={{
+                ...getInputStyle(formData.최대금액),
+                width: "122px",
+              }}
+            />
+          </div>
+        </div>
+
+        <div>
+        </div>
+        <div>
+        </div>
+        <div>
         </div>
 
         {/* 초기화 */}

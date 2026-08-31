@@ -34,6 +34,8 @@ export default function BusinessList({ masterData, reloadData }) {
           조회시작월: "",
           조회종료연도: "",
           조회종료월: "",
+          최소금액: "",
+          최대금액: "",
         };
   });
 
@@ -171,12 +173,6 @@ export default function BusinessList({ masterData, reloadData }) {
 
   const [expandedRows, setExpandedRows] = useState({});
 
-  // const progressColor = {
-  //   미진행: "#FFFFFF",
-  //   진행중: "#FFFFCC",
-  //   완료: "#D9D9D9",
-  // };
-
   const hasPeriodAmount = (row, months) => {
     if (!usePeriodFilter || !periodFilter.start || !periodFilter.end) {
       return true;
@@ -276,6 +272,11 @@ export default function BusinessList({ masterData, reloadData }) {
       }
 
       return filterKeys.every((key) => {
+        // 금액 범위는 사업 단위(grouped)에서 별도로 처리
+        if (key === "최소금액" || key === "최대금액") {
+          return true;
+        }
+
         if (multiFields[key]) {
           return true;
         }
@@ -318,8 +319,47 @@ export default function BusinessList({ masterData, reloadData }) {
       map[key].metrics[row.metric] = row;
       map[key].metricList.push(row);
     });
-
     const filteredGrouped = grouped.filter((group) => {
+      // ==============================
+      // 금액 범위 필터
+      // ==============================
+      const hasMinAmount =
+        filterData.최소금액 !== "" &&
+        filterData.최소금액 !== null &&
+        filterData.최소금액 !== undefined;
+
+      const hasMaxAmount =
+        filterData.최대금액 !== "" &&
+        filterData.최대금액 !== null &&
+        filterData.최대금액 !== undefined;
+
+      if (hasMinAmount || hasMaxAmount) {
+        const salesRow = group.metrics["매출"];
+
+        // 매출 행이 없으면 제외
+        if (!salesRow) {
+          return false;
+        }
+
+        const annualAmount = Number(
+          String(salesRow["연간계"] || 0).replace(/,/g, ""),
+        );
+
+        const minAmount = hasMinAmount
+          ? Number(filterData.최소금액)
+          : -Infinity;
+
+        const maxAmount = hasMaxAmount ? Number(filterData.최대금액) : Infinity;
+
+        // 최소 ~ 최대 범위 밖이면 제외
+        if (annualAmount < minAmount || annualAmount > maxAmount) {
+          return false;
+        }
+      }
+
+      // ==============================
+      // 조회기간 필터
+      // ==============================
       if (!usePeriodFilter || !periodFilter.start || !periodFilter.end) {
         return true;
       }
@@ -609,7 +649,7 @@ export default function BusinessList({ masterData, reloadData }) {
               fontWeight: "500",
             }}
           >
-            최종 업데이트&nbsp;&nbsp;2026.08.24
+            최종 업데이트&nbsp;&nbsp;2026.08.31
           </span>
         </div>
         <div className="period-check-box">
