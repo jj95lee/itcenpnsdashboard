@@ -228,7 +228,7 @@
 
 /* 헤더 */
 .metric-detail-table th {
-  height: 42px;
+  height: 34px;
   background: #e9f6ff;
   color: #475569;
   font-size: 13px;
@@ -237,7 +237,7 @@
 
 /* 데이터 */
 .metric-detail-table td {
-  height: 42px;
+  height: 28px;
   color: #334155;
   font-size: 13px;
 }
