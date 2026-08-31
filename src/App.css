@@ -40,7 +40,7 @@ body {
 .basic-info {
   font-weight: 400;
   background: white;
-  padding: 20px 25px 25px;
+  padding: 20px 25px 10px;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
@@ -169,7 +169,7 @@ button {
 }
 
 .reset-box {
-  transform: translateX(155px);
+  transform: translate(155px, -15px);
 }
 
 .detail-button {

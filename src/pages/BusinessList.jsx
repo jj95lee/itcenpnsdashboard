@@ -851,10 +851,9 @@ export default function BusinessList({ masterData, reloadData }) {
                   </strong>
                 </span>
 
-                <span style={{ fontSize: "12px", fontWeight: "400"  }}>
+                <span style={{ fontSize: "12px", fontWeight: "400" }}>
                   (단위 : 천원)
-                  <strong>
-                  </strong>
+                  <strong></strong>
                 </span>
               </div>
             </h3>
@@ -1129,7 +1128,16 @@ export default function BusinessList({ masterData, reloadData }) {
                                     }
                                     title={String(metricRow[key] ?? "")}
                                   >
-                                    {metricRow[key]}
+                                    {metricRow[key] !== "" &&
+                                    metricRow[key] !== null &&
+                                    metricRow[key] !== undefined
+                                      ? Number(
+                                          String(metricRow[key]).replace(
+                                            /,/g,
+                                            "",
+                                          ),
+                                        ).toLocaleString()
+                                      : ""}
                                   </td>
                                 ))}
                                 {mIndex === 0 && (

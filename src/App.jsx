@@ -10,6 +10,8 @@ import dashboard from "../src/assets/dashboard.png";
 
 import logo from "./assets/logo.png";
 import char from "./assets/char.png";
+import char2 from "./assets/char2.png";
+import char3 from "./assets/char3.png";
 
 function App() {
   const [page, setPage] = useState("dashboard");
@@ -42,14 +44,45 @@ function App() {
       >
         <div
           style={{
-            width: "60px",
-            height: "60px",
-            borderRadius: "50%",
-            border: "6px solid #dbeafe",
-            borderTop: "6px solid #2563eb",
-            animation: "spin 1s linear infinite",
+            position: "relative",
+            width: "80px",
+            height: "80px",
           }}
-        />
+        >
+          {/* 회전하는 원 */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              borderRadius: "50%",
+              border: "6px solid #dbeafe",
+              borderTop: "6px solid #2563eb",
+              animation: "spin 1s linear infinite",
+            }}
+          />
+
+          {/* 가운데 아이콘 */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "24px",
+            }}
+          >
+            <img
+              src={char3}
+              alt="로딩"
+              style={{
+                width: "81px",
+                height: "81px",
+                objectFit: "contain",
+              }}
+            />
+          </div>
+        </div>
 
         <div
           style={{
