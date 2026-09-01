@@ -10,23 +10,25 @@ export function makeOverallData(rows) {
   let profit2025 = 0;
   let profit2026 = 0;
 
-  rows.forEach((row) => {
-    const year = String(row["연도"]);
-    const metric = row["metric"];
-    const total = Number(row["연간계"] || 0);
+  rows
+    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .forEach((row) => {
+      const year = String(row["연도"]);
+      const metric = row["metric"];
+      const total = Number(row["연간계"] || 0);
 
-    if (metric === "매출") {
-      if (year === "2024") sales2024 += total;
-      if (year === "2025") sales2025 += total;
-      if (year === "2026") sales2026 += total;
-    }
+      if (metric === "매출") {
+        if (year === "2024") sales2024 += total;
+        if (year === "2025") sales2025 += total;
+        if (year === "2026") sales2026 += total;
+      }
 
-    if (metric === "매출이익") {
-      if (year === "2024") profit2024 += total;
-      if (year === "2025") profit2025 += total;
-      if (year === "2026") profit2026 += total;
-    }
-  });
+      if (metric === "매출이익") {
+        if (year === "2024") profit2024 += total;
+        if (year === "2025") profit2025 += total;
+        if (year === "2026") profit2026 += total;
+      }
+    });
 
   return [
     {
@@ -56,28 +58,30 @@ export function makeOverallDataExcludingMaintenance(rows) {
   let profit2025 = 0;
   let profit2026 = 0;
 
-  rows.forEach((row) => {
-    // 유지보수 데이터 제외
-    if (String(row["매출유형"] || "") === "유지보수") {
-      return;
-    }
+  rows
+    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .forEach((row) => {
+      // 유지보수 데이터 제외
+      if (String(row["매출유형"] || "") === "유지보수") {
+        return;
+      }
 
-    const year = String(row["연도"]);
-    const metric = row["metric"];
-    const total = Number(row["연간계"] || 0);
+      const year = String(row["연도"]);
+      const metric = row["metric"];
+      const total = Number(row["연간계"] || 0);
 
-    if (metric === "매출") {
-      if (year === "2024") sales2024 += total;
-      if (year === "2025") sales2025 += total;
-      if (year === "2026") sales2026 += total;
-    }
+      if (metric === "매출") {
+        if (year === "2024") sales2024 += total;
+        if (year === "2025") sales2025 += total;
+        if (year === "2026") sales2026 += total;
+      }
 
-    if (metric === "매출이익") {
-      if (year === "2024") profit2024 += total;
-      if (year === "2025") profit2025 += total;
-      if (year === "2026") profit2026 += total;
-    }
-  });
+      if (metric === "매출이익") {
+        if (year === "2024") profit2024 += total;
+        if (year === "2025") profit2025 += total;
+        if (year === "2026") profit2026 += total;
+      }
+    });
 
   return [
     {
@@ -107,28 +111,30 @@ export function makeMaintenanceData(rows) {
   let profit2025 = 0;
   let profit2026 = 0;
 
-  rows.forEach((row) => {
-    // 유지보수 데이터만
-    if (String(row["매출유형"] || "") !== "유지보수") {
-      return;
-    }
+  rows
+    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .forEach((row) => {
+      // 유지보수 데이터만
+      if (String(row["매출유형"] || "") !== "유지보수") {
+        return;
+      }
 
-    const year = String(row["연도"]);
-    const metric = row["metric"];
-    const total = Number(row["연간계"] || 0);
+      const year = String(row["연도"]);
+      const metric = row["metric"];
+      const total = Number(row["연간계"] || 0);
 
-    if (metric === "매출") {
-      if (year === "2024") sales2024 += total;
-      if (year === "2025") sales2025 += total;
-      if (year === "2026") sales2026 += total;
-    }
+      if (metric === "매출") {
+        if (year === "2024") sales2024 += total;
+        if (year === "2025") sales2025 += total;
+        if (year === "2026") sales2026 += total;
+      }
 
-    if (metric === "매출이익") {
-      if (year === "2024") profit2024 += total;
-      if (year === "2025") profit2025 += total;
-      if (year === "2026") profit2026 += total;
-    }
-  });
+      if (metric === "매출이익") {
+        if (year === "2024") profit2024 += total;
+        if (year === "2025") profit2025 += total;
+        if (year === "2026") profit2026 += total;
+      }
+    });
 
   return [
     {
@@ -152,51 +158,53 @@ export function makeMaintenanceData(rows) {
 export function makeProductData(rows) {
   const result = {};
 
-  rows.forEach((row) => {
-    let product = row["구분"] || "(공백)";
-    product = product.replace("솔루션 - ", "").trim();
+  rows
+    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .forEach((row) => {
+      let product = row["구분"] || "(공백)";
+      product = product.replace("솔루션 - ", "").trim();
 
-    // ===== 숨길 제품 =====
-    const hideProducts = [
-      "(공백)",
-      "IFRS",
-      "서비스",
-      "상품",
-      "기타(상품)",
-      "CMVP",
-      "",
-    ];
+      // ===== 숨길 제품 =====
+      const hideProducts = [
+        "(공백)",
+        "IFRS",
+        "서비스",
+        "상품",
+        "기타(상품)",
+        "CMVP",
+        "",
+      ];
 
-    // 제품명 자체가 숨길 대상이면 제외
-    if (hideProducts.includes(product)) return;
+      // 제품명 자체가 숨길 대상이면 제외
+      if (hideProducts.includes(product)) return;
 
-    const year = String(row["연도"]);
-    const metric = row["metric"];
-    const total = Number(row["연간계"] || 0);
+      const year = String(row["연도"]);
+      const metric = row["metric"];
+      const total = Number(row["연간계"] || 0);
 
-    if (!result[product]) {
-      result[product] = {
-        sales2024: 0,
-        sales2025: 0,
-        sales2026: 0,
-        profit2024: 0,
-        profit2025: 0,
-        profit2026: 0,
-      };
-    }
+      if (!result[product]) {
+        result[product] = {
+          sales2024: 0,
+          sales2025: 0,
+          sales2026: 0,
+          profit2024: 0,
+          profit2025: 0,
+          profit2026: 0,
+        };
+      }
 
-    if (metric === "매출") {
-      if (year === "2024") result[product].sales2024 += total;
-      if (year === "2025") result[product].sales2025 += total;
-      if (year === "2026") result[product].sales2026 += total;
-    }
+      if (metric === "매출") {
+        if (year === "2024") result[product].sales2024 += total;
+        if (year === "2025") result[product].sales2025 += total;
+        if (year === "2026") result[product].sales2026 += total;
+      }
 
-    if (metric === "매출이익") {
-      if (year === "2024") result[product].profit2024 += total;
-      if (year === "2025") result[product].profit2025 += total;
-      if (year === "2026") result[product].profit2026 += total;
-    }
-  });
+      if (metric === "매출이익") {
+        if (year === "2024") result[product].profit2024 += total;
+        if (year === "2025") result[product].profit2025 += total;
+        if (year === "2026") result[product].profit2026 += total;
+      }
+    });
 
   return Object.entries(result).map(([product, value]) => ({
     product,
@@ -223,55 +231,57 @@ export function makeProductData(rows) {
 export function makeProductDataExcludingMaintenance(rows) {
   const result = {};
 
-  rows.forEach((row) => {
-    // 매출유형이 유지보수인 데이터 제외
-    if (String(row["매출유형"] || "") === "유지보수") {
-      return;
-    }
+  rows
+    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .forEach((row) => {
+      // 매출유형이 유지보수인 데이터 제외
+      if (String(row["매출유형"] || "") === "유지보수") {
+        return;
+      }
 
-    let product = row["구분"] || "(공백)";
-    product = product.replace("솔루션 - ", "").trim();
+      let product = row["구분"] || "(공백)";
+      product = product.replace("솔루션 - ", "").trim();
 
-    // ===== 숨길 제품 =====
-    const hideProducts = [
-      "(공백)",
-      "IFRS",
-      "서비스",
-      "상품",
-      "기타(상품)",
-      "CMVP",
-      "",
-    ];
+      // ===== 숨길 제품 =====
+      const hideProducts = [
+        "(공백)",
+        "IFRS",
+        "서비스",
+        "상품",
+        "기타(상품)",
+        "CMVP",
+        "",
+      ];
 
-    if (hideProducts.includes(product)) return;
+      if (hideProducts.includes(product)) return;
 
-    const year = String(row["연도"]);
-    const metric = row["metric"];
-    const total = Number(row["연간계"] || 0);
+      const year = String(row["연도"]);
+      const metric = row["metric"];
+      const total = Number(row["연간계"] || 0);
 
-    if (!result[product]) {
-      result[product] = {
-        sales2024: 0,
-        sales2025: 0,
-        sales2026: 0,
-        profit2024: 0,
-        profit2025: 0,
-        profit2026: 0,
-      };
-    }
+      if (!result[product]) {
+        result[product] = {
+          sales2024: 0,
+          sales2025: 0,
+          sales2026: 0,
+          profit2024: 0,
+          profit2025: 0,
+          profit2026: 0,
+        };
+      }
 
-    if (metric === "매출") {
-      if (year === "2024") result[product].sales2024 += total;
-      if (year === "2025") result[product].sales2025 += total;
-      if (year === "2026") result[product].sales2026 += total;
-    }
+      if (metric === "매출") {
+        if (year === "2024") result[product].sales2024 += total;
+        if (year === "2025") result[product].sales2025 += total;
+        if (year === "2026") result[product].sales2026 += total;
+      }
 
-    if (metric === "매출이익") {
-      if (year === "2024") result[product].profit2024 += total;
-      if (year === "2025") result[product].profit2025 += total;
-      if (year === "2026") result[product].profit2026 += total;
-    }
-  });
+      if (metric === "매출이익") {
+        if (year === "2024") result[product].profit2024 += total;
+        if (year === "2025") result[product].profit2025 += total;
+        if (year === "2026") result[product].profit2026 += total;
+      }
+    });
 
   return Object.entries(result).map(([product, value]) => ({
     product,
@@ -303,27 +313,29 @@ export function makeRenewalData(rows) {
   let profit2025 = 0;
   let profit2026 = 0;
 
-  rows.forEach((row) => {
-    // 사업명에 "갱신"이 없으면 제외
-    if (!String(row["사업명"] || "").includes("갱신")) return;
-    if (String(row["매출유형"] || "") === "유지보수") return;
+  rows
+    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .forEach((row) => {
+      // 사업명에 "갱신"이 없으면 제외
+      if (!String(row["사업명"] || "").includes("갱신")) return;
+      if (String(row["매출유형"] || "") === "유지보수") return;
 
-    const year = String(row["연도"]);
-    const metric = row["metric"];
-    const total = Number(row["연간계"] || 0);
+      const year = String(row["연도"]);
+      const metric = row["metric"];
+      const total = Number(row["연간계"] || 0);
 
-    if (metric === "매출") {
-      if (year === "2024") sales2024 += total;
-      if (year === "2025") sales2025 += total;
-      if (year === "2026") sales2026 += total;
-    }
+      if (metric === "매출") {
+        if (year === "2024") sales2024 += total;
+        if (year === "2025") sales2025 += total;
+        if (year === "2026") sales2026 += total;
+      }
 
-    if (metric === "매출이익") {
-      if (year === "2024") profit2024 += total;
-      if (year === "2025") profit2025 += total;
-      if (year === "2026") profit2026 += total;
-    }
-  });
+      if (metric === "매출이익") {
+        if (year === "2024") profit2024 += total;
+        if (year === "2025") profit2025 += total;
+        if (year === "2026") profit2026 += total;
+      }
+    });
 
   return [
     {
@@ -352,27 +364,29 @@ export function makeProcurementData(rows) {
   let profit2025 = 0;
   let profit2026 = 0;
 
-  rows.forEach((row) => {
-    // 사업명에 "조달"이 포함되고, 매출유형이 "유지보수"가 아닌 데이터만
-    if (!String(row["사업명"] || "").includes("조달")) return;
-    if (String(row["매출유형"] || "") === "유지보수") return;
+  rows
+    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .forEach((row) => {
+      // 사업명에 "조달"이 포함되고, 매출유형이 "유지보수"가 아닌 데이터만
+      if (!String(row["사업명"] || "").includes("조달")) return;
+      if (String(row["매출유형"] || "") === "유지보수") return;
 
-    const year = String(row["연도"]);
-    const metric = row["metric"];
-    const total = Number(row["연간계"] || 0);
+      const year = String(row["연도"]);
+      const metric = row["metric"];
+      const total = Number(row["연간계"] || 0);
 
-    if (metric === "매출") {
-      if (year === "2024") sales2024 += total;
-      if (year === "2025") sales2025 += total;
-      if (year === "2026") sales2026 += total;
-    }
+      if (metric === "매출") {
+        if (year === "2024") sales2024 += total;
+        if (year === "2025") sales2025 += total;
+        if (year === "2026") sales2026 += total;
+      }
 
-    if (metric === "매출이익") {
-      if (year === "2024") profit2024 += total;
-      if (year === "2025") profit2025 += total;
-      if (year === "2026") profit2026 += total;
-    }
-  });
+      if (metric === "매출이익") {
+        if (year === "2024") profit2024 += total;
+        if (year === "2025") profit2025 += total;
+        if (year === "2026") profit2026 += total;
+      }
+    });
 
   return [
     {
@@ -395,50 +409,52 @@ export function makeProcurementData(rows) {
 export function makeCustomerData(rows) {
   const result = {};
 
-  rows.forEach((row) => {
-    let customer = row["고객유형"] || "(공백)";
+  rows
+    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .forEach((row) => {
+      let customer = row["고객유형"] || "(공백)";
 
-    // ===== 표시할 고객유형 설정 =====
+      // ===== 표시할 고객유형 설정 =====
 
-    // 공백 숨기기
-    if (customer === "(공백)") return;
+      // 공백 숨기기
+      if (customer === "(공백)") return;
 
-    // 기업 숨기기
-    // if (customer === "기업") return;
+      // 기업 숨기기
+      // if (customer === "기업") return;
 
-    // 금융 숨기기
-    // if (customer === "금융") return;
+      // 금융 숨기기
+      // if (customer === "금융") return;
 
-    // 공공 숨기기
-    // if (customer === "공공") return;
+      // 공공 숨기기
+      // if (customer === "공공") return;
 
-    const year = String(row["연도"]);
-    const metric = row["metric"];
-    const total = Number(row["연간계"] || 0);
+      const year = String(row["연도"]);
+      const metric = row["metric"];
+      const total = Number(row["연간계"] || 0);
 
-    if (!result[customer]) {
-      result[customer] = {
-        sales2024: 0,
-        sales2025: 0,
-        sales2026: 0,
-        profit2024: 0,
-        profit2025: 0,
-        profit2026: 0,
-      };
-    }
+      if (!result[customer]) {
+        result[customer] = {
+          sales2024: 0,
+          sales2025: 0,
+          sales2026: 0,
+          profit2024: 0,
+          profit2025: 0,
+          profit2026: 0,
+        };
+      }
 
-    if (metric === "매출") {
-      if (year === "2024") result[customer].sales2024 += total;
-      if (year === "2025") result[customer].sales2025 += total;
-      if (year === "2026") result[customer].sales2026 += total;
-    }
+      if (metric === "매출") {
+        if (year === "2024") result[customer].sales2024 += total;
+        if (year === "2025") result[customer].sales2025 += total;
+        if (year === "2026") result[customer].sales2026 += total;
+      }
 
-    if (metric === "매출이익") {
-      if (year === "2024") result[customer].profit2024 += total;
-      if (year === "2025") result[customer].profit2025 += total;
-      if (year === "2026") result[customer].profit2026 += total;
-    }
-  });
+      if (metric === "매출이익") {
+        if (year === "2024") result[customer].profit2024 += total;
+        if (year === "2025") result[customer].profit2025 += total;
+        if (year === "2026") result[customer].profit2026 += total;
+      }
+    });
 
   return Object.entries(result).map(([customer, value]) => ({
     customer,
@@ -751,23 +767,25 @@ export function calcPeriodAmount(rows, start, end) {
     매출이익: 0,
   };
 
-  rows.forEach((row) => {
-    row.metricList.forEach((metricRow) => {
-      const metric = metricRow.metric;
+  rows
+    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .forEach((row) => {
+      row.metricList.forEach((metricRow) => {
+        const metric = metricRow.metric;
 
-      months.forEach((m) => {
-        if (String(row.basic["연도"]) === String(m.year)) {
-          const rawValue = metricRow[m.month + "월"];
+        months.forEach((m) => {
+          if (String(row.basic["연도"]) === String(m.year)) {
+            const rawValue = metricRow[m.month + "월"];
 
-          const value = Number(String(rawValue || 0).replace(/,/g, "")) || 0;
+            const value = Number(String(rawValue || 0).replace(/,/g, "")) || 0;
 
-          if (result[metric] !== undefined) {
-            result[metric] += value;
+            if (result[metric] !== undefined) {
+              result[metric] += value;
+            }
           }
-        }
+        });
       });
     });
-  });
 
   return result;
 }
