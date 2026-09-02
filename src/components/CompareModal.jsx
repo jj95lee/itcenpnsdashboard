@@ -73,6 +73,7 @@ export default function CompareModal({
 
     const displayKeys = [
       "연도",
+      "팀",
       "New/Sold",
       "매출유형",
       "구분",
