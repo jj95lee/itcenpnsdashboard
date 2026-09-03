@@ -1,7 +1,7 @@
 // ============================== 전체 ==============================
 // 유지보수 포함
 
-export function makeOverallData(rows) {
+export function makeOverallData(rows, selectedTeam = "솔루션영업팀") {
   let sales2024 = 0;
   let sales2025 = 0;
   let sales2026 = 0;
@@ -11,7 +11,10 @@ export function makeOverallData(rows) {
   let profit2026 = 0;
 
   rows
-    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .filter(
+      (row) =>
+        String(row["팀"] || "").trim() === String(selectedTeam || "").trim(),
+    )
     .forEach((row) => {
       const year = String(row["연도"]);
       const metric = row["metric"];
@@ -49,7 +52,10 @@ export function makeOverallData(rows) {
 // ============================== 전체 ==============================
 
 // 유지보수 제외
-export function makeOverallDataExcludingMaintenance(rows) {
+export function makeOverallDataExcludingMaintenance(
+  rows,
+  selectedTeam = "솔루션영업팀",
+) {
   let sales2024 = 0;
   let sales2025 = 0;
   let sales2026 = 0;
@@ -59,7 +65,10 @@ export function makeOverallDataExcludingMaintenance(rows) {
   let profit2026 = 0;
 
   rows
-    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .filter(
+      (row) =>
+        String(row["팀"] || "").trim() === String(selectedTeam || "").trim(),
+    )
     .forEach((row) => {
       // 유지보수 데이터 제외
       if (String(row["매출유형"] || "") === "유지보수") {
@@ -102,7 +111,7 @@ export function makeOverallDataExcludingMaintenance(rows) {
 // ============================== 유지보수 ==============================
 
 // 유지보수 데이터만
-export function makeMaintenanceData(rows) {
+export function makeMaintenanceData(rows, selectedTeam = "솔루션영업팀") {
   let sales2024 = 0;
   let sales2025 = 0;
   let sales2026 = 0;
@@ -112,7 +121,10 @@ export function makeMaintenanceData(rows) {
   let profit2026 = 0;
 
   rows
-    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .filter(
+      (row) =>
+        String(row["팀"] || "").trim() === String(selectedTeam || "").trim(),
+    )
     .forEach((row) => {
       // 유지보수 데이터만
       if (String(row["매출유형"] || "") !== "유지보수") {
@@ -155,11 +167,14 @@ export function makeMaintenanceData(rows) {
 // ============================== 제품별 ==============================
 // 유지보수 포함
 
-export function makeProductData(rows) {
+export function makeProductData(rows, selectedTeam = "솔루션영업팀") {
   const result = {};
 
   rows
-    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .filter(
+      (row) =>
+        String(row["팀"] || "").trim() === String(selectedTeam || "").trim(),
+    )
     .forEach((row) => {
       let product = row["구분"] || "(공백)";
       product = product.replace("솔루션 - ", "").trim();
@@ -228,11 +243,17 @@ export function makeProductData(rows) {
 // ============================== 제품별 ==============================
 // 유지보수 제외
 
-export function makeProductDataExcludingMaintenance(rows) {
+export function makeProductDataExcludingMaintenance(
+  rows,
+  selectedTeam = "솔루션영업팀",
+) {
   const result = {};
 
   rows
-    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .filter(
+      (row) =>
+        String(row["팀"] || "").trim() === String(selectedTeam || "").trim(),
+    )
     .forEach((row) => {
       // 매출유형이 유지보수인 데이터 제외
       if (String(row["매출유형"] || "") === "유지보수") {
@@ -304,7 +325,7 @@ export function makeProductDataExcludingMaintenance(rows) {
 
 // ============================== 갱신형 ==============================
 
-export function makeRenewalData(rows) {
+export function makeRenewalData(rows, selectedTeam = "솔루션영업팀") {
   let sales2024 = 0;
   let sales2025 = 0;
   let sales2026 = 0;
@@ -314,7 +335,10 @@ export function makeRenewalData(rows) {
   let profit2026 = 0;
 
   rows
-    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .filter(
+      (row) =>
+        String(row["팀"] || "").trim() === String(selectedTeam || "").trim(),
+    )
     .forEach((row) => {
       // 사업명에 "갱신"이 없으면 제외
       if (!String(row["사업명"] || "").includes("갱신")) return;
@@ -355,7 +379,7 @@ export function makeRenewalData(rows) {
 
 // ============================== 조달 ==============================
 
-export function makeProcurementData(rows) {
+export function makeProcurementData(rows, selectedTeam = "솔루션영업팀") {
   let sales2024 = 0;
   let sales2025 = 0;
   let sales2026 = 0;
@@ -365,7 +389,10 @@ export function makeProcurementData(rows) {
   let profit2026 = 0;
 
   rows
-    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .filter(
+      (row) =>
+        String(row["팀"] || "").trim() === String(selectedTeam || "").trim(),
+    )
     .forEach((row) => {
       // 사업명에 "조달"이 포함되고, 매출유형이 "유지보수"가 아닌 데이터만
       if (!String(row["사업명"] || "").includes("조달")) return;
@@ -406,11 +433,14 @@ export function makeProcurementData(rows) {
 
 // ============================== 고객사 ==============================
 
-export function makeCustomerData(rows) {
+export function makeCustomerData(rows, selectedTeam = "솔루션영업팀") {
   const result = {};
 
   rows
-    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .filter(
+      (row) =>
+        String(row["팀"] || "").trim() === String(selectedTeam || "").trim(),
+    )
     .forEach((row) => {
       let customer = row["고객유형"] || "(공백)";
 
@@ -757,7 +787,12 @@ export function makeCompareData(savedFilters, masterRows) {
   ];
 }
 
-export function calcPeriodAmount(rows, start, end) {
+export function calcPeriodAmount(
+  rows,
+  start,
+  end,
+  selectedTeam = "솔루션영업팀",
+) {
   const months = getPeriodMonths(start, end);
 
   let result = {
@@ -768,7 +803,10 @@ export function calcPeriodAmount(rows, start, end) {
   };
 
   rows
-    .filter((row) => String(row["팀"] || "").trim() === "솔루션영업팀")
+    .filter(
+      (row) =>
+        String(row["팀"] || "").trim() === String(selectedTeam || "").trim(),
+    )
     .forEach((row) => {
       row.metricList.forEach((metricRow) => {
         const metric = metricRow.metric;
