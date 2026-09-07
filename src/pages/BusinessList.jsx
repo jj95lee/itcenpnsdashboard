@@ -649,7 +649,7 @@ export default function BusinessList({ masterData, reloadData }) {
               fontWeight: "500",
             }}
           >
-            최종 업데이트&nbsp;&nbsp;2026.08.31
+            최종 업데이트&nbsp;&nbsp;2026.09.07
           </span>
         </div>
         <div className="period-check-box">
