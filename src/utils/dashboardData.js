@@ -191,7 +191,12 @@ export function makeProductData(rows, selectedTeam = "솔루션영업팀") {
       ];
 
       // 제품명 자체가 숨길 대상이면 제외
-      if (hideProducts.includes(product)) return;
+      if (
+        hideProducts.includes(product) &&
+        !(selectedTeam === "보안컨설팅팀" && product === "상품")
+      ) {
+        return;
+      }
 
       const year = String(row["연도"]);
       const metric = row["metric"];
@@ -274,7 +279,12 @@ export function makeProductDataExcludingMaintenance(
         "",
       ];
 
-      if (hideProducts.includes(product)) return;
+      if (
+        hideProducts.includes(product) &&
+        !(selectedTeam === "보안컨설팅팀" && product === "상품")
+      ) {
+        return;
+      }
 
       const year = String(row["연도"]);
       const metric = row["metric"];

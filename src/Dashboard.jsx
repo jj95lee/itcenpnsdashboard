@@ -25,7 +25,17 @@ import logo from "./assets/logo.png";
 import char from "./assets/char.png";
 
 export default function Dashboard({ masterData }) {
-  const rows = masterData.rows || [];
+  const rows = (masterData.rows || []).map((row) => {
+    const category = String(row["구분"] || "")
+      .trim()
+      .toLowerCase();
+
+    return {
+      ...row,
+      구분:
+        category === "솔루션 - enxection" ? "솔루션 - EnXection" : row["구분"],
+    };
+  });
 
   // 데이터에 실제로 존재하는 팀 목록을 자동으로 생성
   const teamOptions = useMemo(() => {
@@ -75,7 +85,8 @@ export default function Dashboard({ masterData }) {
       {/* 전체 화면 */}
       <header className="dashboard__header">
         {/* 상단 제목 */}
-        <div className="dashboard__header-content"
+        <div
+          className="dashboard__header-content"
           className="dashboard__header-content"
           style={{ position: "relative" }}
         >
