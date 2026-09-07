@@ -8,6 +8,18 @@ import { calcPeriodAmount } from "../utils/dashboardData";
 import CompareTable from "../components/CompareTable";
 import CompareModal from "../components/CompareModal";
 
+const normalizeNewSold = (value) => {
+  const normalized = String(value ?? "")
+    .trim()
+    .toLowerCase();
+
+  if (normalized === "nsold") return "NSold";
+  if (normalized === "sold") return "Sold";
+
+  return value;
+};
+
+
 export default function BusinessList({ masterData, reloadData }) {
   const [filterData, setFilterData] = useState(() => {
     const saved = sessionStorage.getItem("filterData");
@@ -247,7 +259,14 @@ export default function BusinessList({ masterData, reloadData }) {
       usePeriodFilter && periodFilter.start && periodFilter.end
         ? getPeriodMonths(periodFilter.start, periodFilter.end)
         : [];
-    const filtered = masterData.rows.filter((row) => {
+
+    // New/Sold 값 정규화
+    const normalizedRows = (masterData?.rows || []).map((row) => ({
+      ...row,
+      "New/Sold": normalizeNewSold(row["New/Sold"]),
+    }));
+
+    const filtered = normalizedRows.filter((row) => {
       // 조회기간 금액 없는 사업 제외
       if (!hasPeriodAmount(row, periodMonths)) {
         return false;

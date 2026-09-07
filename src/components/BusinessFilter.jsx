@@ -143,7 +143,7 @@ const MultiSelectDropdown = ({
       >
         <span>
           {selected.length === 0
-            ? "선택"
+            ? "전체"
             : isAllSelected
               ? "전체"
               : `${selected.length}개 선택`}
@@ -290,32 +290,21 @@ export default function BasicInfo({
     });
   };
 
-  const rows = (masterData.rows || []).map((row) => {
-    const newSold = String(row["New/Sold"] || "")
-      .trim()
-      .toLowerCase();
-    const category = String(row["구분"] || "")
-      .trim()
-      .toLowerCase();
-
-    return {
+  const rows = useMemo(() => {
+    return (masterData?.rows || []).map((row) => ({
       ...row,
+      "New/Sold": (() => {
+        const value = String(row["New/Sold"] ?? "")
+          .trim()
+          .toLowerCase();
 
-      // New/Sold 통일
-      "New/Sold":
-        newSold === "nsold"
-          ? "NSold"
-          : newSold === "sold"
-            ? "Sold"
-            : newSold === "new"
-              ? "New"
-              : row["New/Sold"],
+        if (value === "nsold") return "NSold";
+        if (value === "sold") return "Sold";
 
-      // 구분 통일
-      구분:
-        category === "솔루션 - enxection" ? "솔루션 - EnXection" : row["구분"],
-    };
-  });
+        return row["New/Sold"];
+      })(),
+    }));
+  }, [masterData]);
 
   const getOptions = (field, filteredRows) => {
     const values = [
@@ -345,25 +334,6 @@ export default function BasicInfo({
         if (isMonthB) return 1;
 
         return String(a).localeCompare(String(b), "ko");
-      });
-    } else if (field === "팀") {
-      // 팀 원하는 순서
-      const order = ["솔루션영업팀", "보안컨설팅팀", "생체인증플랫폼팀"];
-
-      values.sort((a, b) => {
-        const indexA = order.indexOf(a);
-        const indexB = order.indexOf(b);
-
-        // 지정한 순서에 있는 팀은 위 순서대로
-        if (indexA !== -1 && indexB !== -1) {
-          return indexA - indexB;
-        }
-
-        // 새로운 팀이 추가되면 뒤쪽에 표시
-        if (indexA !== -1) return -1;
-        if (indexB !== -1) return 1;
-
-        return a.localeCompare(b, "ko");
       });
     } else if (field === "팀") {
       // 팀 원하는 순서
