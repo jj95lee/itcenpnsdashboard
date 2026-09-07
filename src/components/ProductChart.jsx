@@ -7,13 +7,12 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts"
+} from "recharts";
 
 const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload || !payload.length) return null;
 
-  if (!active || !payload || !payload.length) return null
-
-  const d = payload[0].payload
+  const d = payload[0].payload;
 
   return (
     <div
@@ -41,31 +40,51 @@ const CustomTooltip = ({ active, payload, label }) => {
       <div>2026 매출이익 : {d.profit2026.toLocaleString()}</div>
       <div>2026 매출원가 : {d.cost2026.toLocaleString()}</div>
     </div>
-  )
-}
+  );
+};
 
 export default function ProductChart({ data }) {
+  // 제품 표시 순서
+  const productOrder = ["AppIron", "KeyPad", "Vaccine", "EdgeDB", "EnXection"];
+
+  // 제품 순서대로 정렬
+  const sortedData = [...data].sort((a, b) => {
+    const nameA = String(a.product || "")
+      .trim()
+      .toLowerCase();
+    const nameB = String(b.product || "")
+      .trim()
+      .toLowerCase();
+
+    const indexA = productOrder.findIndex(
+      (name) => name.toLowerCase() === nameA,
+    );
+
+    const indexB = productOrder.findIndex(
+      (name) => name.toLowerCase() === nameB,
+    );
+
+    return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+  });
 
   // 제품별 그래프 데이터 생성
-  const chartData = data.map(product => {
-
-    const sales = product.rows.find(r => r.label === "매출")
-    const profit = product.rows.find(r => r.label === "매출이익")
+  const chartData = sortedData.map((product) => {
+    const sales = product.rows.find((r) => r.label === "매출");
+    const profit = product.rows.find((r) => r.label === "매출이익");
 
     // 2024
-    const sales2024 = sales?.y2024 ?? 0
-    const profit2024 = profit?.y2024 ?? 0
+    const sales2024 = sales?.y2024 ?? 0;
+    const profit2024 = profit?.y2024 ?? 0;
 
     // 2025
-    const sales2025 = sales?.y2025 ?? 0
-    const profit2025 = profit?.y2025 ?? 0
+    const sales2025 = sales?.y2025 ?? 0;
+    const profit2025 = profit?.y2025 ?? 0;
 
     // 2026
-    const sales2026 = sales?.y2026 ?? 0
-    const profit2026 = profit?.y2026 ?? 0
+    const sales2026 = sales?.y2026 ?? 0;
+    const profit2026 = profit?.y2026 ?? 0;
 
     return {
-
       product: product.product,
 
       // 2024
@@ -82,24 +101,16 @@ export default function ProductChart({ data }) {
       sales2026,
       profit2026,
       cost2026: sales2026 - profit2026,
-    }
-  })
+    };
+  });
 
   return (
     <div style={{ width: "100%", height: 480 }}>
       <ResponsiveContainer>
-
-        <BarChart
-          data={chartData}
-          barGap={5}
-        >
-
+        <BarChart data={chartData} barGap={5}>
           <CartesianGrid strokeDasharray="3 3" />
 
-          <XAxis
-            dataKey="product"
-            tick={{ fontSize: 12 }}
-          />
+          <XAxis dataKey="product" tick={{ fontSize: 12 }} />
 
           <YAxis
             tickFormatter={(value) => value.toLocaleString()}
@@ -110,9 +121,7 @@ export default function ProductChart({ data }) {
 
           <Legend
             formatter={(value) => (
-              <span style={{ marginRight: 20 }}>
-                {value}
-              </span>
+              <span style={{ marginRight: 20 }}>{value}</span>
             )}
             align="center"
             wrapperStyle={{
@@ -169,10 +178,8 @@ export default function ProductChart({ data }) {
             fill="#197aea"
             name="2026 매출"
           />
-
         </BarChart>
-
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

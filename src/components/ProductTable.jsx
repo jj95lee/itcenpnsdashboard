@@ -1,10 +1,30 @@
-import { calcYoy, formatNumber, formatYoy } from '../utils/formatters'
+import { calcYoy, formatNumber, formatYoy } from "../utils/formatters";
 
-export default function ProductTable({ rows, unit = '천원' }) {
+export default function ProductTable({ rows, unit = "천원" }) {
+  const productOrder = ["AppIron", "KeyPad", "Vaccine", "EdgeDB", "EnXection"];
+
+  const sortedRows = [...rows].sort((a, b) => {
+    const nameA = String(a.product || "")
+      .trim()
+      .toLowerCase();
+    const nameB = String(b.product || "")
+      .trim()
+      .toLowerCase();
+
+    const indexA = productOrder.findIndex(
+      (name) => name.toLowerCase() === nameA,
+    );
+
+    const indexB = productOrder.findIndex(
+      (name) => name.toLowerCase() === nameB,
+    );
+
+    return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+  });
+
   return (
     <div className="table-wrapper">
       <table className="data-table">
-
         <thead>
           <tr>
             <th className="col-product">제품</th>
@@ -18,53 +38,36 @@ export default function ProductTable({ rows, unit = '천원' }) {
         </thead>
 
         <tbody>
-          {rows.map((product) =>
+          {sortedRows.map((product) =>
             product.rows.map((row, index) => {
-
               // 2025 YoY = (2025 - 2024) / 2024
-              const yoy2025 = calcYoy(row.y2024, row.y2025)
+              const yoy2025 = calcYoy(row.y2024, row.y2025);
 
               // 2026 YoY = (2026 - 2025) / 2025
-              const yoy2026 = calcYoy(row.y2025, row.y2026)
+              const yoy2026 = calcYoy(row.y2025, row.y2026);
 
               return (
                 <tr
                   key={`${product.product}-${row.label}`}
-                  className={index === 0 ? 'product-group-start' : ''}
+                  className={index === 0 ? "product-group-start" : ""}
                 >
-
                   {index === 0 && (
-                    <td
-                      className="col-product"
-                      rowSpan={product.rows.length}
-                    >
+                    <td className="col-product" rowSpan={product.rows.length}>
                       {product.product}
                     </td>
                   )}
 
-                  <td className="col-label">
-                    {row.label}
-                  </td>
+                  <td className="col-label">{row.label}</td>
 
-                  <td className="col-number">
-                    {formatNumber(row.y2024)}
-                  </td>
+                  <td className="col-number">{formatNumber(row.y2024)}</td>
 
-                  <td className="col-number">
-                    {formatNumber(row.y2025)}
-                  </td>
+                  <td className="col-number">{formatNumber(row.y2025)}</td>
 
-                  <td className="col-number">
-                    {formatNumber(row.y2026)}
-                  </td>
+                  <td className="col-number">{formatNumber(row.y2026)}</td>
 
                   <td
                     className={`col-number ${
-                      yoy2025 > 0
-                        ? 'positive'
-                        : yoy2025 < 0
-                          ? 'negative'
-                          : ''
+                      yoy2025 > 0 ? "positive" : yoy2025 < 0 ? "negative" : ""
                     }`}
                   >
                     {formatYoy(yoy2025)}
@@ -72,34 +75,25 @@ export default function ProductTable({ rows, unit = '천원' }) {
 
                   <td
                     className={`col-number ${
-                      yoy2026 > 0
-                        ? 'positive'
-                        : yoy2026 < 0
-                          ? 'negative'
-                          : ''
+                      yoy2026 > 0 ? "positive" : yoy2026 < 0 ? "negative" : ""
                     }`}
                   >
                     {formatYoy(yoy2026)}
                   </td>
-
                 </tr>
-              )
-            })
+              );
+            }),
           )}
         </tbody>
 
         <tfoot>
           <tr>
-            <td
-              colSpan={7}
-              className="table-unit"
-            >
+            <td colSpan={7} className="table-unit">
               단위: {unit}
             </td>
           </tr>
         </tfoot>
-
       </table>
     </div>
-  )
+  );
 }

@@ -365,6 +365,25 @@ export default function BasicInfo({
 
         return a.localeCompare(b, "ko");
       });
+    } else if (field === "팀") {
+      // 팀 원하는 순서
+      const order = ["솔루션영업팀", "보안컨설팅팀", "생체인증플랫폼팀"];
+
+      values.sort((a, b) => {
+        const indexA = order.indexOf(a);
+        const indexB = order.indexOf(b);
+
+        // 지정한 순서에 있는 팀은 위 순서대로
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+
+        // 새로운 팀이 추가되면 뒤쪽에 표시
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+
+        return a.localeCompare(b, "ko");
+      });
     } else if (field === "매출유형") {
       // 매출유형 원하는 순서
       const order = ["유지보수", "기타매출", "상품매출", "제품매출"];
