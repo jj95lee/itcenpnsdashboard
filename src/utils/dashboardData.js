@@ -18,7 +18,7 @@ export function makeOverallData(rows, selectedTeam = "솔루션영업팀") {
     .forEach((row) => {
       const year = String(row["연도"]);
       const metric = row["metric"];
-      const total = Number(row["연간계"] || 0);
+      const total = Number(String(row["연간계"] || 0).replace(/,/g, "")) || 0;
 
       if (metric === "매출") {
         if (year === "2024") sales2024 += total;
@@ -77,7 +77,7 @@ export function makeOverallDataExcludingMaintenance(
 
       const year = String(row["연도"]);
       const metric = row["metric"];
-      const total = Number(row["연간계"] || 0);
+      const total = Number(String(row["연간계"] || 0).replace(/,/g, "")) || 0;
 
       if (metric === "매출") {
         if (year === "2024") sales2024 += total;
@@ -133,7 +133,7 @@ export function makeMaintenanceData(rows, selectedTeam = "솔루션영업팀") {
 
       const year = String(row["연도"]);
       const metric = row["metric"];
-      const total = Number(row["연간계"] || 0);
+      const total = Number(String(row["연간계"] || 0).replace(/,/g, "")) || 0;
 
       if (metric === "매출") {
         if (year === "2024") sales2024 += total;
@@ -195,7 +195,7 @@ export function makeProductData(rows, selectedTeam = "솔루션영업팀") {
 
       const year = String(row["연도"]);
       const metric = row["metric"];
-      const total = Number(row["연간계"] || 0);
+      const total = Number(String(row["연간계"] || 0).replace(/,/g, "")) || 0;
 
       if (!result[product]) {
         result[product] = {
@@ -278,7 +278,7 @@ export function makeProductDataExcludingMaintenance(
 
       const year = String(row["연도"]);
       const metric = row["metric"];
-      const total = Number(row["연간계"] || 0);
+      const total = Number(String(row["연간계"] || 0).replace(/,/g, "")) || 0;
 
       if (!result[product]) {
         result[product] = {
@@ -346,7 +346,7 @@ export function makeRenewalData(rows, selectedTeam = "솔루션영업팀") {
 
       const year = String(row["연도"]);
       const metric = row["metric"];
-      const total = Number(row["연간계"] || 0);
+      const total = Number(String(row["연간계"] || 0).replace(/,/g, "")) || 0;
 
       if (metric === "매출") {
         if (year === "2024") sales2024 += total;
@@ -400,7 +400,7 @@ export function makeProcurementData(rows, selectedTeam = "솔루션영업팀") {
 
       const year = String(row["연도"]);
       const metric = row["metric"];
-      const total = Number(row["연간계"] || 0);
+      const total = Number(String(row["연간계"] || 0).replace(/,/g, "")) || 0;
 
       if (metric === "매출") {
         if (year === "2024") sales2024 += total;
@@ -460,7 +460,7 @@ export function makeCustomerData(rows, selectedTeam = "솔루션영업팀") {
 
       const year = String(row["연도"]);
       const metric = row["metric"];
-      const total = Number(row["연간계"] || 0);
+      const total = Number(String(row["연간계"] || 0).replace(/,/g, "")) || 0;
 
       if (!result[customer]) {
         result[customer] = {
